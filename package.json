@@ -1,0 +1,39 @@
+{
+  "name": "mnoga",
+  "version": "0.0.1",
+  "description": "Simple internationalization library for Javascript.",
+  "license": "MIT",
+  "main": "dist",
+  "scripts": {
+    "build": "tsc",
+    "postinstall": "tsc",
+    "test": "mocha -r ts-node/register 'src/**/*.spec.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iknow/mnoga.git"
+  },
+  "keywords": [
+    "bcp47",
+    "i18n",
+    "internationalization",
+    "localization",
+    "pluralize",
+    "pluralization"
+  ],
+  "bugs": {
+    "url": "https://github.com/iknow/mnoga/issues"
+  },
+  "homepage": "https://github.com/iknow/mnoga#readme",
+  "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.42",
+    "@types/sinon": "^2.3.3",
+    "chai": "^4.1.1",
+    "mocha": "^3.5.0",
+    "pre-commit": "^1.2.2",
+    "sinon": "^3.2.1",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.4.2"
+  }
+}
