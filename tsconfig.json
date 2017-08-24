@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "lib": [
+      "ES2017"
+    ],
+    "module": "CommonJS",
+    "noImplicitAny": true,
+    "outDir": "dist",
+    "removeComments": true,
+    "strictNullChecks": true,
+    "types": [
+      "console",
+      "env",
+      "mocha"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "typings"
+    ]
+  },
+  "include": [
+    "src/**/*",
+    "node_modules/@types"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}
