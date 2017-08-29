@@ -68,7 +68,7 @@ export class Mnoga {
   private aliases: Aliases = {};
   private fallback: string = DEFAULT_LOCALE;
   private keyMode: boolean = false;
-  private locale: string = DEFAULT_LOCALE;
+  private locale?: string;
   private rules: Rules = {};
   private subscribers: Function[] = [];
   private translations: Translations = {};
@@ -110,8 +110,12 @@ export class Mnoga {
     return !!this.keyMode;
   }
 
+  /**
+   * Returns the locale that is primarily being used to look up translations. This may actually be
+   * the fallback locale if no suitable locales have been passed to setLocale.
+   */
   public getLocale(): string {
-    return this.locale.toString();
+    return this.locale || this.fallback;
   }
 
   public hasTranslationsForLocale(locale: string): boolean {
@@ -195,7 +199,8 @@ export class Mnoga {
    * would try to match: ['zh-Hant-HK', 'zh-Hant-TW', 'zh-Hant', 'zh'].
    *
    * If passed an array of locales in order of preferences, the first locale that has translations
-   * will be chosen. If no translations are found, then the first locale will be set.
+   * will be chosen. If no translations are found, then locale will be unset and fallback will be
+   * used.
    *
    * This method should be called after setting up all rules and translations.
    */
@@ -227,7 +232,7 @@ export class Mnoga {
       possibleLocales
         // Swap any locales that have aliases with their alias.
         .map((l) => this.aliases[l] || l)
-        .find((l) => this.hasTranslationsForLocale(l)) || locales[0];
+        .find((l) => this.hasTranslationsForLocale(l));
 
     if (matchedLocale !== this.locale) {
       this.locale = matchedLocale;
@@ -315,8 +320,21 @@ export class Mnoga {
       return key;
     }
 
-    const { fallback = this.fallback, locale = this.locale } = options;
-    const locales: string[] = [locale, fallback];
+    const locales: string[] = [];
+
+    // If options has a locale, normalize it and use that instead of locale. Otherwise, check
+    // if locale is even set and add that to possible locales.
+    if (options.locale !== undefined) {
+      locales.push(this.normalizeLocale(options.locale));
+    } else if (this.locale !== undefined) {
+      locales.push(this.locale);
+    }
+
+    if (options.fallback !== undefined) {
+      locales.push(this.normalizeLocale(options.fallback));
+    } else {
+      locales.push(this.fallback);
+    }
 
     // Loop through the locales and try to find an appropriate translation.
     for (let i = 0; i < locales.length; i++) {
@@ -348,7 +366,7 @@ export class Mnoga {
     return key;
   }
 
-  private callSubscribers(): void {
+  protected callSubscribers(): void {
     this.subscribers.map((subscriber) => subscriber());
   }
 

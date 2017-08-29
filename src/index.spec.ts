@@ -119,8 +119,7 @@ describe('Mnoga', () => {
 
   describe('getLocale', () => {
     it('returns single locale', () => {
-      mnoga.setLocale(['zh-yue']);
-      expect(mnoga.getLocale()).to.equal('zh-yue');
+      expect(mnoga.getLocale()).to.equal('en');
     });
   });
 
@@ -202,6 +201,7 @@ describe('Mnoga', () => {
     });
 
     it('normalizes locale', () => {
+      mnoga.setTranslations('zh-Hant-HK', {});
       mnoga.setLocale('ZH-hANT-hk');
       expect(mnoga.getLocale()).to.equal('zh-Hant-HK');
     });
@@ -245,14 +245,9 @@ describe('Mnoga', () => {
       expect(mnoga.getLocale()).to.equal('zh-Hant-TW');
     })
 
-    it('chooses locale if no ideal matches are found', () => {
+    it('does not use the locale if no match is found', () => {
       mnoga.setLocale('zh-yue');
-      expect(mnoga.getLocale()).to.equal('zh-yue');
-    });
-
-    it('chooses first locale if no ideal matches are found', () => {
-      mnoga.setLocale(['zh-Hant-HK', 'zh-Hant-TW']);
-      expect(mnoga.getLocale()).to.equal('zh-Hant-HK');
+      expect(mnoga.getLocale()).to.equal('en');
     });
 
     it('uses alias when setting the locale', () => {
@@ -267,6 +262,7 @@ describe('Mnoga', () => {
     });
 
     it('does not call subscriber', () => {
+      mnoga.setLocale('en');
       callsSubscribers(() => mnoga.setLocale('en'), false);
     });
   });
@@ -350,9 +346,18 @@ describe('Mnoga', () => {
       expect(mnoga.t('app.label', {}, { locale: 'en' })).to.equal('App String');
     });
 
+    it('normalizes custom locale', () => {
+      expect(mnoga.t('app.label', {}, { locale: 'EN' })).to.equal('App String');
+    });
+
     it('uses custom fallback if provided', () => {
       mnoga.setTranslations('zh-yue', { app: { no: { string: 'test' } } });
       expect(mnoga.t('app.no.string', {}, { fallback: 'zh-yue' }));
+    });
+
+    it('normalizes custom fallback', () => {
+      mnoga.setTranslations('zh-yue', { app: { no: { string: 'test' } } });
+      expect(mnoga.t('app.no.string', {}, { fallback: 'ZH-YUE' }));
     });
   });
 });
