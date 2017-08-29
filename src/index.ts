@@ -28,8 +28,12 @@ const DEFAULT_LOCALE = 'en';
 // Export PluralCategory so it is easy for others to create rules.
 export { PluralCategory };
 
-export interface TranslationObject {
-  [propName: string]: TranslationObject | string;
+interface Aliases {
+  [propName: string]: string;
+};
+
+export interface Translations {
+  [propName: string]: Translations | string;
 };
 
 export interface Rule {
@@ -58,15 +62,16 @@ export interface Unsubscribe {
   (): void;
 }
 
-type TranslationLookup = TranslationObject | string | undefined;
+type TranslationLookup = Translations | string | undefined;
 
 export class Mnoga {
+  private aliases: Aliases = {};
   private fallback: string = DEFAULT_LOCALE;
   private keyMode: boolean = false;
   private locale: string = DEFAULT_LOCALE;
   private rules: Rules = {};
   private subscribers: Function[] = [];
-  private translations: TranslationObject = {};
+  private translations: Translations = {};
 
   // For warnings.
   private pluralWarning: Set<string>;
@@ -83,6 +88,10 @@ export class Mnoga {
     this.setRule('fr', oneUpToTwoOther);
     this.setRule('pl', polish);
     this.setRule('cs', westSlavic);
+  }
+
+  public deleteAlias(locale: string | string[]) {
+    this.deleteFrom(locale, this.aliases);
   }
 
   public deleteRule(locale: string | string[]) {
@@ -108,6 +117,56 @@ export class Mnoga {
   public hasTranslationsForLocale(locale: string): boolean {
     const normalized = this.normalizeLocale(locale);
     return normalized in this.translations;
+  }
+
+  /**
+   * Creates an alias for a locale.
+   *
+   * This method makes it so a locale will be substituted when looking for an optimal locale using
+   * setLocale. An ideal use for this method is when you don't technically support a region/locale,
+   * but have a decent fallback for it.
+   *
+   * For example, let's say you have translations for ['en-US', 'en-GB']. You might prefer a user
+   * with locale 'en-AU' to fallback to 'en-GB', even though it's not technically supported.
+   *
+   * mnoga.setTranslations('en-GB', { ... });
+   * mnoga.setAlias('en-AU', 'en-GB');
+   * mnoga.setLocale('en-AU');
+   * mnoga.getLocale(); // will print 'en-GB'
+   */
+  public setAlias(alias: string | string[], locale: string): void {
+    // Normalize locales.
+    const aliases = this.normalizeLocales(alias);
+    const normalizedLocale = this.normalizeLocale(locale);
+
+    // Prevent recursive behavior.
+    if (normalizedLocale in this.aliases || aliases.includes(normalizedLocale)) {
+      throw new Error(`${locale} cannot already be an alias.`);
+    }
+
+    // Make sure no aliases have a translation.
+    aliases
+      .forEach((a) => {
+        if (this.hasTranslationsForLocale(a)) {
+          throw new Error(`${a} has translations set and should not be used as an alias.`);
+        }
+      });
+
+    const hasChanges =
+      aliases
+        .map((a) => {
+          if (this.aliases[a] !== normalizedLocale) {
+            this.aliases[a] = normalizedLocale;
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .includes(true);
+
+    if (hasChanges) {
+      this.callSubscribers();
+    }
   }
 
   /**
@@ -165,7 +224,10 @@ export class Mnoga {
     }
 
     const matchedLocale =
-      possibleLocales.find((l) => this.hasTranslationsForLocale(l)) || locales[0];
+      possibleLocales
+        // Swap any locales that have aliases with their alias.
+        .map((l) => this.aliases[l] || l)
+        .find((l) => this.hasTranslationsForLocale(l)) || locales[0];
 
     if (matchedLocale !== this.locale) {
       this.locale = matchedLocale;
@@ -212,7 +274,7 @@ export class Mnoga {
    * // Fallback for all other chinese language tags.
    * mnoga.setTranslations('zh', ...);
    */
-  public setTranslations(locale: string | string[], translations: TranslationObject): void {
+  public setTranslations(locale: string | string[], translations: Translations): void {
     const locales = this.normalizeLocales(locale);
     const clonedTranslations = this.cloneTranslations(translations);
 
@@ -294,7 +356,7 @@ export class Mnoga {
    * Clones the translations object passed in. However, it will also verify that each context
    * of a key is valid.
    */
-  private cloneTranslations(translations: TranslationObject): TranslationObject {
+  private cloneTranslations(translations: Translations): Translations {
     const newTranslations = { ...translations };
 
     Object
@@ -310,14 +372,14 @@ export class Mnoga {
 
         if (typeof newTranslations[context] === 'object') {
           newTranslations[context] =
-            this.cloneTranslations(<TranslationObject>newTranslations[context]);
+            this.cloneTranslations(<Translations>newTranslations[context]);
         }
       });
 
     return newTranslations;
   }
 
-  private deleteFrom(locale: string | string[], lookup: Rules | TranslationObject): void {
+  private deleteFrom(locale: string | string[], lookup: Rules | Translations): void {
     const locales = this.normalizeLocales(locale);
     const mapper = (l: string) => {
       if (l in lookup) {
@@ -397,7 +459,7 @@ export class Mnoga {
     }
   }
 
-  private translationReducer(translations: TranslationObject, context: string): TranslationLookup {
+  private translationReducer(translations: Translations, context: string): TranslationLookup {
     return typeof translations === 'object' ? translations[context] : undefined;
   }
 }

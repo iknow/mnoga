@@ -40,6 +40,17 @@ describe('Mnoga', () => {
     mnoga.setTranslations('ja', JA_TRANSLATIONS);
   });
 
+  describe('deleteAlias', () => {
+    it('calls subscriber', () => {
+      mnoga.setAlias('zh-yue', 'zh');
+      callsSubscribers(() => mnoga.deleteAlias('zh-yue'), true);
+    });
+
+    it('does not call subscriber', () => {
+      callsSubscribers(() => mnoga.deleteAlias('zh-yue'), false);
+    });
+  });
+
   describe('deleteRule', () => {
     it('deletes the rule', () => {
       const before = mnoga.t('app.pluralize', { count: 1 });
@@ -133,6 +144,29 @@ describe('Mnoga', () => {
     });
   });
 
+  describe('setAlias', () => {
+    it('fails with non valid aliases', () => {
+      expect(() => mnoga.setAlias(INVALID_LOCALE, 'zh-yue')).to.throw();
+    });
+
+    it('fails with a non valid locale', () => {
+      expect(() => mnoga.setAlias('zh-yue', INVALID_LOCALE)).to.throw();
+    });
+
+    it('fails when alias equals the locale', () => {
+      expect(() => mnoga.setAlias('zh-yue', 'zh-yue')).to.throw();
+    });
+
+    it('calls subscribers', () => {
+      callsSubscribers(() => mnoga.setAlias('en-AU', 'en'), true);
+    });
+
+    it('does not call subscribers', () => {
+      mnoga.setAlias('en-AU', 'en');
+      callsSubscribers(() => mnoga.setAlias('en-AU', 'en'), false);
+    });
+  });
+
   describe('setFallback', () => {
     it('fails if passed a non valid locale', () => {
       expect(() => mnoga.setFallback(INVALID_LOCALE)).to.throw();
@@ -219,6 +253,13 @@ describe('Mnoga', () => {
     it('chooses first locale if no ideal matches are found', () => {
       mnoga.setLocale(['zh-Hant-HK', 'zh-Hant-TW']);
       expect(mnoga.getLocale()).to.equal('zh-Hant-HK');
+    });
+
+    it('uses alias when setting the locale', () => {
+      mnoga.setTranslations('zh-yue', {});
+      mnoga.setAlias('zh-Hant', 'zh-yue');
+      mnoga.setLocale('zh-Hant-HK');
+      expect(mnoga.getLocale()).to.equal('zh-yue');
     });
 
     it('calls subscriber', () => {
