@@ -359,5 +359,15 @@ describe('Mnoga', () => {
       mnoga.setTranslations('zh-yue', { app: { no: { string: 'test' } } });
       expect(mnoga.t('app.no.string', {}, { fallback: 'ZH-YUE' }));
     });
+
+    it('works without delimiters', () => {
+      mnoga.setTranslations('en', { key: 'string' });
+      expect(mnoga.t('key')).to.equal('string');
+    });
+
+    it('works with delimiters', () => {
+      mnoga.setTranslations('en', { key: { context: 'string' } });
+      expect(mnoga.t('key.context')).to.equal('string');
+    });
   });
 });
