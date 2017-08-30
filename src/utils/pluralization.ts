@@ -1,4 +1,6 @@
 /**
+ * Contains pluralization rules that can be used.
+ *
  * Some references and explanations of the CDLR plural rules:
  *  - http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
  *  - http://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules
@@ -6,6 +8,8 @@
  *
  * These rules were ported from rails-i18n:
  *  - https://github.com/svenfuchs/rails-i18n
+ *
+ * @preferred
  */
 
 /**

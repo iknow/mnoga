@@ -55,10 +55,17 @@ export default class LanguageTag {
     return !!this.script;
   }
 
+  /**
+   * @returns Normalized string representation of this instance.
+   */
   public toString(): string {
     return this.normalizedString;
   }
 
+  /**
+   * @param languageTag BFC47 standrd language tag.
+   * @returns           Normalized string for language tag.
+   */
   public static toString(languageTag: string): string {
     return new LanguageTag(languageTag).toString();
   }

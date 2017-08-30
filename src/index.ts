@@ -89,29 +89,47 @@ export default class Mnoga {
     this.setRule(['cs', 'sk'], westSlavic);
   }
 
+  /**
+   * Remove an alias to a locale.
+   * @param locale  Locale or list of locales that are already aliased.
+   */
   public deleteAlias(locale: string | string[]) {
     this.deleteFrom(locale, this.aliases);
   }
 
+  /**
+   * Remove a pluralization rule for a locale.
+   * @param locale  Locale or list of locales that have pluralization rules.
+   */
   public deleteRule(locale: string | string[]) {
     this.deleteFrom(locale, this.rules);
   }
 
+  /**
+   * Remove a set of translation for a locale.
+   * @param locale  Locale or list of locales that have a set of translations.
+   */
   public deleteTranslations(locale: string | string[]) {
     this.deleteFrom(locale, this.translations);
   }
 
+  /**
+   * @returns The locale that will be used if the primary locale could not be found.
+   */
   public getFallback(): string {
     return this.fallback;
   }
 
+  /**
+   * @returns True if in key mode, false if not.
+   */
   public getKeyMode(): boolean {
     return !!this.keyMode;
   }
 
   /**
-   * Returns the locale that is primarily being used to look up translations. This may actually be
-   * the fallback locale if no suitable locales have been passed to setLocale.
+   * @returns The locale that is primarily being used to look up translations. This may actually be
+   *          the fallback locale if no suitable locales have been passed to setLocale.
    */
   public getLocale(): string {
     return this.locale || this.fallback;
@@ -129,13 +147,20 @@ export default class Mnoga {
    * setLocale. An ideal use for this method is when you don't technically support a region/locale,
    * but have a decent fallback for it.
    *
-   * For example, let's say you have translations for ['en-US', 'en-GB']. You might prefer a user
-   * with locale 'en-AU' to fallback to 'en-GB', even though it's not technically supported.
+   * For example, let's say you have translations for `['en-US', 'en-GB']`. You might prefer a user
+   * with locale `en-AU` to fallback to `en-GB`, even though it's not technically supported.
+   *
+   * ```
+   * const mnoga = new Mnoga();
    *
    * mnoga.setTranslations('en-GB', { ... });
    * mnoga.setAlias('en-AU', 'en-GB');
    * mnoga.setLocale('en-AU');
    * mnoga.getLocale(); // will print 'en-GB'
+   * ```
+   *
+   * @param alias   Locale or locales that should be substituted for.
+   * @param locale  The locale that should be used in the place of the alias.
    */
   public setAlias(alias: string | string[], locale: string): void {
     // Normalize locales.
@@ -175,8 +200,10 @@ export default class Mnoga {
   /**
    * Sets a locale to fallback to when a string is unavailable for the main locale. Ideally, the
    * fallback locale has a translation for every key.
+   *
+   * @param fallback  Locale that should be used when primary locale can't be found.
    */
-  public setFallback(fallback: string) {
+  public setFallback(fallback: string): void {
     const normalized = this.normalizeLocale(fallback);
 
     if (this.fallback !== normalized) {
@@ -185,6 +212,10 @@ export default class Mnoga {
     }
   }
 
+  /**
+   * Having key mode on will cause the `t` method to always return the key. This may be useful for
+   * debugging.
+   */
   public setKeyMode(toggle: boolean): void {
     if (this.keyMode !== toggle) {
       this.keyMode = toggle;
@@ -194,14 +225,15 @@ export default class Mnoga {
 
   /**
    * Sets the locales to use when calling t(). By default, the method tries to find an ideal
-   * fallback sequence for the provided locale. For example, ['zh-Hant-HK', 'zh-Hant-TW']
-   * would try to match: ['zh-Hant-HK', 'zh-Hant-TW', 'zh-Hant', 'zh'].
+   * fallback sequence for the provided locale. For example, `['zh-Hant-HK', 'zh-Hant-TW']`
+   * would try to match: `['zh-Hant-HK', 'zh-Hant-TW', 'zh-Hant', 'zh']`.
    *
    * If passed an array of locales in order of preferences, the first locale that has translations
    * will be chosen. If no translations are found, then locale will be unset and fallback will be
    * used.
    *
-   * This method should be called after setting up all rules and translations.
+   * This method should be called after setting up all rules and translations. If called before, a
+   * locale might be considered unavailable and will not be chosen.
    */
   public setLocale(locale: string | string[]): void {
     // Normalize all the locales.
@@ -242,7 +274,9 @@ export default class Mnoga {
   /**
    * Sets a rule for pluralizing a locale.
    *
-   * If provided an array, will set the rule for all locales in the array.
+   * @param locale  Locale or array of locales to set the rule for.
+   * @param rule    Callback that takes a number and returns a PluralCategory. Will be used whenever
+   *                pluralization is required for a key that is using the specified locale.
    */
   public setRule(locale: string | string[], rule: Rule): void {
     const locales: string[] = this.normalizeLocales(locale);
@@ -265,18 +299,9 @@ export default class Mnoga {
   /**
    * Sets the translations for a particular locale or locales.
    *
-   * Since different environments offer different varieties of language tags, it is suggested
-   * that languages that may have script tags list all possiblities.
-   *
-   * For example, when listing all the possible locales for chinese:
-   *
-   * const mnoga = new Mnoga();
-   *
-   * // For traditional chinese language tags.
-   * mnoga.setTranslations(['zh-Hant', 'zh-HK', 'zh-TW'], ...);
-   *
-   * // Fallback for all other chinese language tags.
-   * mnoga.setTranslations('zh', ...);
+   * @param locale        Locale or list of locales that the translations should be linked to.
+   * @param translations  Nested JSON object, where object values are treated as additional context
+   *                      and string values are treated as translations. Other values are not valid.
    */
   public setTranslations(locale: string | string[], translations: Translations): void {
     const locales = this.normalizeLocales(locale);
@@ -291,6 +316,9 @@ export default class Mnoga {
 
   /**
    * Subscribers are called when any of the internal state changes.
+   *
+   * @param handler Callback method for whenever a change occurs in the code.
+   * @returns       A method that when called, will unsubscribe the handler.
    */
   public subscribe(handler: Function): Unsubscribe {
     this.subscribers.push(handler);
@@ -302,7 +330,13 @@ export default class Mnoga {
   }
 
   /**
-   * Find an appropriate translation for a given key.
+   * Find an appropriate string for a given key. This function will attempt to find the string
+   * using the primary locale, then will use the fallback if there is no match. If there are no
+   * matches, then the key will be returned.
+   *
+   * @param key   The key for looking up the string. Context should be delimited with a period.
+   * @param data  Contains data to be interpolated. `count` is a magic value for pluralization.
+   * @returns     Best string match for key given.
    */
   public t(key: string, data: TDataObject = {}, options: TOptions = {}): string {
     // If we're not in production mode, be sure the people testing
@@ -442,10 +476,12 @@ export default class Mnoga {
    * Generates all possible subsets from a language tag.
    *
    * Examples:
+   * ```
    * new LanguageTag('zh-Hant-HK').makeSubsets()    // ['zh-Hant', 'zh']
    * new LanguageTag('zh-HK').makeSubsets()         // ['zh']
    * new LanguageTag('zh-Hant').makeSubsets()       // ['zh']
    * new LanguageTag('zh').makeSubsets()            // []
+   * ```
    */
   private makeSubsets(locale: string): string[] {
     const subsets: string[] = [];
