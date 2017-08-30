@@ -6,7 +6,10 @@
   "main": "dist",
   "scripts": {
     "build": "tsc",
+    "docs:build": "typedoc --theme minimal --excludePrivate --out docs src/index && touch docs/.nojekyll",
+    "docs:publish": "npm run docs:build && gh-pages --dotfiles -d docs",
     "postinstall": "tsc",
+    "postversion": "npm run docs:publish",
     "test": "mocha -r ts-node/register 'src/**/*.spec.ts'"
   },
   "repository": {
@@ -30,10 +33,12 @@
     "@types/mocha": "^2.2.42",
     "@types/sinon": "^2.3.3",
     "chai": "^4.1.1",
+    "gh-pages": "^1.0.0",
     "mocha": "^3.5.0",
     "pre-commit": "^1.2.2",
     "sinon": "^3.2.1",
     "ts-node": "^3.3.0",
+    "typedocs": "^0.6.3",
     "typescript": "^2.4.2"
   }
 }
