@@ -1,4 +1,4 @@
-import { LanguageTag } from './utils/LanguageTag';
+import LanguageTag from './utils/LanguageTag';
 import {
   PluralCategory,
   arabic,
@@ -64,7 +64,7 @@ export interface Unsubscribe {
 
 type TranslationLookup = Translations | string | undefined;
 
-export class Mnoga {
+export default class Mnoga {
   private aliases: Aliases = {};
   private fallback: string = DEFAULT_LOCALE;
   private keyMode: boolean = false;

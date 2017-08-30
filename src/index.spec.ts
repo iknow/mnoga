@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { spy } from 'sinon';
-import { Mnoga, PluralCategory } from './index';
+import Mnoga, { PluralCategory } from './index';
 
 describe('Mnoga', () => {
   let mnoga: Mnoga;

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { LanguageTag } from './LanguageTag';
+import LanguageTag from './LanguageTag';
 
 describe('LanguageTag', () => {
   it('throws when passed invalid locales', () => {

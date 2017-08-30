@@ -21,7 +21,7 @@ const IETF_LANGUAGE: RegExp = new RegExp(
 /**
  * Class for parsing BCP47 language tags.
  */
-export class LanguageTag {
+export default class LanguageTag {
   readonly language: string;
   readonly region: string | undefined;
   readonly script: string | undefined;
