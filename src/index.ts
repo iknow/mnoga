@@ -78,16 +78,15 @@ export default class Mnoga {
 
   constructor() {
     // Set the default rules.
-    // TODO: Add 30 most common languages.
     this.setRule('ar', arabic);
-    this.setRule('ru', eastSlavic);
-    this.setRule(['en', 'es', 'it', 'pt'], oneOther);
-    this.setRule(['id', 'ja', 'ko', 'th', 'tr', 'vi', 'zh'], other);
+    this.setRule(['be', 'uk', 'ru'], eastSlavic);
+    this.setRule(['af', 'de', 'fi', 'el', 'en', 'es', 'it', 'ne', 'nl', 'pt', 'sw'], oneOther);
+    this.setRule(['id', 'ja', 'ko', 'ms', 'my', 'th', 'tr', 'vi', 'zh'], other);
     this.setRule('hi', oneWithZeroOther);
     this.setRule('iu', oneTwoOther);
     this.setRule('fr', oneUpToTwoOther);
     this.setRule('pl', polish);
-    this.setRule('cs', westSlavic);
+    this.setRule(['cs', 'sk'], westSlavic);
   }
 
   public deleteAlias(locale: string | string[]) {
