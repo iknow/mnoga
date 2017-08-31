@@ -208,3 +208,7 @@ console.log(document.head.title); // '日本語ホムページ'
 mnoga.setTranslations('ja', { title: '新しい日本語ホムページ' });
 console.log(document.head.title); // '新しい日本語ホムページ'
 ```
+
+## Further Reading
+
+To find out more about the functionality available, please check out the [API documentation](https://iknow.github.io/mnoga/classes/_index_.mnoga.html).
