@@ -915,10 +915,11 @@ img { max-width: 100%; }
 	<div class="content-wrap">
 		<div class="tsd-panel tsd-typography">
 			<h1 id="mnoga-build-status-https-travis-ci-org-iknow-mnoga-svg-branch-master-https-travis-ci-org-iknow-mnoga-">Mnoga <a href="https://travis-ci.org/iknow/mnoga"><img src="https://travis-ci.org/iknow/mnoga.svg?branch=master" alt="Build Status"></a></h1>
-			<p>Simple and easy to use internationalization library for javascript or typescript.</p>
+			<p>Simple and easy-to-use internationalization library for javascript or typescript.</p>
+			<p>Mnoga (/ˈmnɔɡa/) is the Polish word for &quot;plural.&quot;</p>
 			<h2 id="features">Features</h2>
 			<ul>
-				<li>Uses common nested JSON format, with the same interpolation style as rails i18n.</li>
+				<li>Uses a nested JSON format and interpolation style similar to <a href="http://guides.rubyonrails.org/i18n.html">Rails I18n YAML</a>.</li>
 				<li>Strings are written in a format that is easy to use by content editors.</li>
 				<li>Normalizes <a href="https://tools.ietf.org/html/rfc5646">BCP 47</a> language tags.</li>
 				<li>Includes <a href="http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html">CLDR pluralization rules</a> for a lot common languages.<ul>
@@ -939,8 +940,8 @@ img { max-width: 100%; }
 			<p>Let&#39;s say our site supports Japanese and English. We&#39;ll store our translations in two separate files
 			that are in a nested JSON format.</p>
 			<p>The keys must consist of alphanumeric characters (with hyphen and underscore also being allowed).
-				If the string has multiple plural versions, the keys <code>one</code>, <code>two</code>, <code>many</code>, <code>few</code>, and <code>other</code> can
-				be used, depending on the language. Please look at the <a href="http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html">CLDR pluralization rules</a> to see
+				If the string has multiple plural versions, the keys <code>zero</code>, <code>one</code>, <code>two</code>, <code>many</code>, <code>few</code>, and <code>other</code>
+				can be used, depending on the language. Please look at the <a href="http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html">CLDR pluralization rules</a> to see
 			keys apply to which language.</p>
 			<p>Strings can contain variables by using the wrapper <code>%{variableName}</code>, where <code>variableName</code> is a
 				variable name of your choosing. There is a magic variable called <code>count</code>, which is used primarily
@@ -1082,6 +1083,25 @@ mnoga.setLocale(<span class="hljs-string">'ja'</span>);
 <span class="hljs-comment">// Changing the translations will call subscribe.</span>
 mnoga.setTranslations(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'新しい日本語ホムページ'</span> });
 <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>.head.title); <span class="hljs-comment">// '新しい日本語ホムページ'</span>
+</code></pre><h2 id="supported-languages-and-extending-support">Supported Languages and Extending Support</h2>
+			<p>The following locales are supported out of the box: <em>af</em>, <em>ar</em>, <em>be</em>, <em>cs</em>, <em>de</em>, <em>el</em>, <em>en</em>, <em>es</em>,
+				<em>fi</em>, <em>fr</em>, <em>hi</em>, <em>id</em>, <em>it</em>, <em>iu</em>, <em>ja</em>, <em>ko</em>, <em>ms</em>, <em>my</em>,  <em>ne</em>, <em>nl</em>, <em>pl</em>, <em>pt</em>, <em>sk</em>, <em>sw</em>,
+			<em>th</em>, <em>tr</em>, <em>ru</em>, <em>uk</em>, <em>vi</em>, <em>zh</em>.</p>
+			<p>Support for additional locales can be added by using the <code>setRule</code> method.</p>
+			<pre><code><span class="hljs-keyword">const</span> mnoga = <span class="hljs-keyword">new</span> Mnoga();
+
+<span class="hljs-comment">// A rule method is a method that takes a number and returns one of the following</span>
+<span class="hljs-comment">// string values: zero, one, two, few, many, and other.</span>
+<span class="hljs-keyword">const</span> rulesForEnglish = <span class="hljs-function">(<span class="hljs-params">count</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (count === <span class="hljs-number">1</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">'one'</span>;
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">'other'</span>;
+  }
+}
+
+<span class="hljs-comment">// Sets this rule for English.</span>
+mnoga.setRule(<span class="hljs-string">'en'</span>, rulesForEnglish);
 </code></pre><h2 id="further-reading">Further Reading</h2>
 			<p>To find out more about the functionality available, please check out the <a href="https://iknow.github.io/mnoga/classes/_index_.mnoga.html">API documentation</a>.</p>
 		</div>
