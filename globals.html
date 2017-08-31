@@ -935,23 +935,21 @@ img { max-width: 100%; }
 			<pre><code>npm <span class="hljs-keyword">install</span> mnoga
 </code></pre><p>If you are using yarn:</p>
 			<pre><code>yarn install --<span class="hljs-keyword">add</span><span class="bash"> mnoga</span>
-</code></pre><h2 id="api-docs">API Docs</h2>
-			<p>The API documentation can be found</p>
-			<h2 id="basic-usage">Basic Usage</h2>
+</code></pre><h2 id="basic-usage">Basic Usage</h2>
 			<p>Let&#39;s say our site supports Japanese and English. We&#39;ll store our translations in two separate files
 			that are in a nested JSON format.</p>
 			<p>The keys must consist of alphanumeric characters (with hyphen and underscore also being allowed).
 				If the string has multiple plural versions, the keys <code>one</code>, <code>two</code>, <code>many</code>, <code>few</code>, and <code>other</code> can
 				be used, depending on the language. Please look at the <a href="http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html">CLDR pluralization rules</a> to see
 			keys apply to which language.</p>
-			<p>Strings can contain variables by using the wrapper <code>${variableName}</code>, where <code>variableName</code> is a
+			<p>Strings can contain variables by using the wrapper <code>%{variableName}</code>, where <code>variableName</code> is a
 				variable name of your choosing. There is a magic variable called <code>count</code>, which is used primarily
 			for pluralization.</p>
 			<h3 id="-en-json-"><code>en.json</code></h3>
 			<pre><code>{
   <span class="hljs-attr">"admin"</span>: {
     <span class="hljs-attr">"header"</span>: {
-      <span class="hljs-attr">"logged-in-as"</span>: <span class="hljs-string">"You are logged in as ${username}."</span>,
+      <span class="hljs-attr">"logged-in-as"</span>: <span class="hljs-string">"You are logged in as %{username}."</span>,
     }
   },
   <span class="hljs-attr">"animals"</span>: {
@@ -1085,7 +1083,7 @@ mnoga.setLocale(<span class="hljs-string">'ja'</span>);
 mnoga.setTranslations(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'新しい日本語ホムページ'</span> });
 <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>.head.title); <span class="hljs-comment">// '新しい日本語ホムページ'</span>
 </code></pre><h2 id="further-reading">Further Reading</h2>
-			<p>To find out more about the functionality available, please check out the <a href="./docs/api/classes/_index_.mnoga.html">API documentation</a>.</p>
+			<p>To find out more about the functionality available, please check out the <a href="https://iknow.github.io/mnoga/classes/_index_.mnoga.html">API documentation</a>.</p>
 		</div>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
