@@ -1,9 +1,11 @@
 # Mnoga [![Build Status](https://travis-ci.org/iknow/mnoga.svg?branch=master)](https://travis-ci.org/iknow/mnoga)
 
-Simple and easy to use internationalization library for javascript or typescript.
+Simple and easy-to-use internationalization library for javascript or typescript.
+
+Mnoga (/ˈmnɔɡa/) is the Polish word for "plural."
 
 ## Features
-  - Uses common nested JSON format, with the same interpolation style as rails i18n.
+  - Uses a nested JSON format and interpolation style similar to [Rails I18n YAML](http://guides.rubyonrails.org/i18n.html).
   - Strings are written in a format that is easy to use by content editors.
   - Normalizes [BCP 47](https://tools.ietf.org/html/rfc5646) language tags.
   - Includes [CLDR pluralization rules](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) for a lot common languages.
@@ -33,8 +35,8 @@ Let's say our site supports Japanese and English. We'll store our translations i
 that are in a nested JSON format.
 
 The keys must consist of alphanumeric characters (with hyphen and underscore also being allowed).
-If the string has multiple plural versions, the keys `one`, `two`, `many`, `few`, and `other` can
-be used, depending on the language. Please look at the [CLDR pluralization rules](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) to see
+If the string has multiple plural versions, the keys `zero`, `one`, `two`, `many`, `few`, and `other`
+can be used, depending on the language. Please look at the [CLDR pluralization rules](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) to see
 keys apply to which language.
 
 Strings can contain variables by using the wrapper `%{variableName}`, where `variableName` is a
@@ -207,6 +209,31 @@ console.log(document.head.title); // '日本語ホムページ'
 // Changing the translations will call subscribe.
 mnoga.setTranslations('ja', { title: '新しい日本語ホムページ' });
 console.log(document.head.title); // '新しい日本語ホムページ'
+```
+
+## Supported Languages and Extending Support
+
+The following locales are supported out of the box: _af_, _ar_, _be_, _cs_, _de_, _el_, _en_, _es_,
+_fi_, _fr_, _hi_, _id_, _it_, _iu_, _ja_, _ko_, _ms_, _my_,  _ne_, _nl_, _pl_, _pt_, _sk_, _sw_,
+_th_, _tr_, _ru_, _uk_, _vi_, _zh_.
+
+Support for additional locales can be added by using the `setRule` method.
+
+```
+const mnoga = new Mnoga();
+
+// A rule method is a method that takes a number and returns one of the following
+// string values: zero, one, two, few, many, and other.
+const rulesForEnglish = (count) => {
+  if (count === 1) {
+    return 'one';
+  } else {
+    return 'other';
+  }
+}
+
+// Sets this rule for English.
+mnoga.setRule('en', rulesForEnglish);
 ```
 
 ## Further Reading

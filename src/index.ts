@@ -80,7 +80,7 @@ export default class Mnoga {
     // Set the default rules.
     this.setRule('ar', arabic);
     this.setRule(['be', 'uk', 'ru'], eastSlavic);
-    this.setRule(['af', 'de', 'fi', 'el', 'en', 'es', 'it', 'ne', 'nl', 'pt', 'sw'], oneOther);
+    this.setRule(['af', 'de', 'el', 'en', 'es', 'fi', 'it', 'ne', 'nl', 'pt', 'sw'], oneOther);
     this.setRule(['id', 'ja', 'ko', 'ms', 'my', 'th', 'tr', 'vi', 'zh'], other);
     this.setRule('hi', oneWithZeroOther);
     this.setRule('iu', oneTwoOther);
