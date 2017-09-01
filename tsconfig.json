@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "module": "CommonJS",
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "dist",
+    "removeComments": true,
+    "strictNullChecks": true,
+    "target": "ES5",
+    "types": [
+      "env",
+      "mocha"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "typings"
+    ]
+  },
+  "include": [
+    "src/**/*",
+    "node_modules/@types"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}
