@@ -20,7 +20,7 @@ const VALID_KEY_CONTEXT = new RegExp(`^${CONTEXT_CHARACTERS}$`);
 const VALID_KEY = new RegExp(`^${CONTEXT_CHARACTERS}(${DELIMITER}${CONTEXT_CHARACTERS})*$`);
 
 // Used to find variable names inside the output string.
-const INTERPOLATION_REGEX = /%\{([^}]*)\}/g;
+const INTERPOLATION_REGEX = /%{([^}]*)}/g;
 
 // Default locale is english.
 const DEFAULT_LOCALE = 'en';
@@ -29,29 +29,25 @@ const DEFAULT_LOCALE = 'en';
 export { PluralCategory };
 
 interface Aliases {
-  [propName: string]: string;
-};
+  [propName: string]: string | undefined;
+}
 
 export interface Translations {
-  [propName: string]: Translations | string;
-};
+  [propName: string]: Translations | string | undefined;
+}
 
 export interface Rule {
   (n: number): PluralCategory;
-};
-
-interface Rules {
-  [propName: string]: Rule;
 }
 
-interface SetLocaleOptions {
-  ignorePreferenceChain?: boolean;
+interface Rules {
+  [propName: string]: Rule | undefined;
 }
 
 export interface TDataObject {
   count?: number;
   [propName: string]: string | number | undefined;
-};
+}
 
 export interface TOptions {
   fallback?: string;
@@ -61,8 +57,6 @@ export interface TOptions {
 export interface Unsubscribe {
   (): void;
 }
-
-type TranslationLookup = Translations | string | undefined;
 
 export default class Mnoga {
   private aliases: Aliases = {};
@@ -124,7 +118,7 @@ export default class Mnoga {
    * @returns True if in key mode, false if not.
    */
   public getKeyMode(): boolean {
-    return !!this.keyMode;
+    return this.keyMode;
   }
 
   /**
@@ -374,11 +368,16 @@ export default class Mnoga {
       const locale = locales[i];
       const contexts = key.split('.');
 
-      let translation: TranslationLookup =
-        contexts.reduce(this.translationReducer, this.translations[locale]);
+      let translation: Translations[string] = this.translations[locale];
+
+      // Iterate through the contexts, getting the next value in the translations.
+      for (let j = 0; j < contexts.length; j++) {
+        const context = contexts[j];
+        translation = this.isTranslations(translation) ? translation[context] : undefined;
+      }
 
       // If there is a count and an object comes back, check if this key is a plural context.
-      if (typeof translation === 'object' && typeof data.count === 'number') {
+      if (this.isTranslations(translation) && typeof data.count === 'number') {
         const pluralContext: string = this.getPluralContext(locale, data.count);
         translation = translation[pluralContext];
       }
@@ -410,27 +409,26 @@ export default class Mnoga {
   private cloneTranslations(translations: Translations): Translations {
     const newTranslations = { ...translations };
 
-    Object
-      .keys(newTranslations)
-      .forEach((context) => {
-        if (process.env.NODE_ENV !== 'production') {
-          if (!context.match(VALID_KEY_CONTEXT)) {
-            throw new Error(
-              `${context} is not a valid key context. ` +
-              `Valid keys should be of the format ${VALID_KEY_CONTEXT.toString()}.`);
-          }
+    for(const context in newTranslations) {
+      if (process.env.NODE_ENV !== 'production') {
+        if (!context.match(VALID_KEY_CONTEXT)) {
+          throw new Error(
+            `${context} is not a valid key context. ` +
+            `Valid keys should be of the format ${VALID_KEY_CONTEXT.toString()}.`);
         }
+      }
 
-        if (typeof newTranslations[context] === 'object') {
-          newTranslations[context] =
-            this.cloneTranslations(<Translations>newTranslations[context]);
-        }
-      });
+      const value = newTranslations[context];
+
+      if (this.isTranslations(value)) {
+        newTranslations[context] = this.cloneTranslations(value);
+      }
+    }
 
     return newTranslations;
   }
 
-  private deleteFrom(locale: string | string[], lookup: Rules | Translations): void {
+  private deleteFrom(locale: string | string[], lookup: Aliases | Rules | Translations): void {
     const locales = this.normalizeLocales(locale);
     const mapper = (l: string) => {
       if (l in lookup) {
@@ -453,7 +451,7 @@ export default class Mnoga {
    */
   private getPluralContext(locale: string, count: number): PluralCategory {
     const { language } = new LanguageTag(locale);
-    const rule: Rule = this.rules[locale] || this.rules[language];
+    const rule = this.rules[locale] || this.rules[language];
 
     // Since the locale may be determined by the end user's environment, do not throw an error. For
     // better debugging purposes, though, print a warning stating that there is no rule for this
@@ -472,8 +470,12 @@ export default class Mnoga {
     return rule !== undefined ? rule(count) : other();
   }
 
+  private isTranslations(translations: Translations[string]): translations is Translations {
+    return typeof translations === 'object';
+  }
+
   /**
-   * Generates all possible subsets from a language tag.
+   * Generates viable subsets from a given locale.
    *
    * Examples:
    * ```
@@ -510,9 +512,5 @@ export default class Mnoga {
     } else {
       return [];
     }
-  }
-
-  private translationReducer(translations: Translations, context: string): TranslationLookup {
-    return typeof translations === 'object' ? translations[context] : undefined;
   }
 }
