@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "lib": [
-      "ES2017"
-    ],
     "module": "CommonJS",
     "noImplicitAny": true,
     "noUnusedLocals": true,
@@ -11,8 +8,8 @@
     "outDir": "dist",
     "removeComments": true,
     "strictNullChecks": true,
+    "target": "ES5",
     "types": [
-      "console",
       "env",
       "mocha"
     ],

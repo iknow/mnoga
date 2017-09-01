@@ -1,3 +1,4 @@
+import { includes } from './utils/array';
 import LanguageTag from './utils/LanguageTag';
 import {
   PluralCategory,
@@ -36,6 +37,10 @@ export interface Translations {
   [propName: string]: Translations | string | undefined;
 }
 
+interface Set {
+  [propName: string]: boolean | undefined;
+};
+
 export interface Rule {
   (n: number): PluralCategory;
 }
@@ -68,7 +73,7 @@ export default class Mnoga {
   private translations: Translations = {};
 
   // For warnings.
-  private pluralWarning: Set<string>;
+  private pluralWarning: Set = {};
 
   constructor() {
     // Set the default rules.
@@ -130,8 +135,8 @@ export default class Mnoga {
   }
 
   public hasTranslationsForLocale(locale: string): boolean {
-    const normalized = this.normalizeLocale(locale);
-    return normalized in this.translations;
+    const normalizedLocale = this.normalizeLocale(locale);
+    return this.isTranslations(this.translations[normalizedLocale]);
   }
 
   /**
@@ -162,7 +167,7 @@ export default class Mnoga {
     const normalizedLocale = this.normalizeLocale(locale);
 
     // Prevent recursive behavior.
-    if (normalizedLocale in this.aliases || aliases.includes(normalizedLocale)) {
+    if (normalizedLocale in this.aliases || includes(aliases, normalizedLocale)) {
       throw new Error(`${locale} cannot already be an alias.`);
     }
 
@@ -174,17 +179,16 @@ export default class Mnoga {
         }
       });
 
-    const hasChanges =
-      aliases
-        .map((a) => {
-          if (this.aliases[a] !== normalizedLocale) {
-            this.aliases[a] = normalizedLocale;
-            return true;
-          } else {
-            return false;
-          }
-        })
-        .includes(true);
+    const mapper = (a: string) => {
+      if (this.aliases[a] !== normalizedLocale) {
+        this.aliases[a] = normalizedLocale;
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    const hasChanges = includes(aliases.map(mapper), true);
 
     if (hasChanges) {
       this.callSubscribers();
@@ -237,8 +241,12 @@ export default class Mnoga {
     const possibleLocales: string[] = [];
 
     // Create a new list of locales that will increase the odds of matching.
-    const baseSet: Set<string> = new Set(locales);
+    const baseSet: Set = {};
 
+    // Add locales to the base set.
+    locales.forEach((l) => (baseSet[l] = true));
+
+    // Create list of possible locales.
     for (let i = 0; i < locales.length; i++) {
       const current = locales[i];
 
@@ -248,7 +256,7 @@ export default class Mnoga {
       // Only add them if they aren't subsets of the next locale or if they appear later in the
       // preference list.
       const next = locales[i + 1] || '';
-      const subsets = this.makeSubsets(current).filter((s) => !baseSet.has(s) && !next.includes(s));
+      const subsets = this.makeSubsets(current).filter((s) => !baseSet[s] && next.search(s) === -1);
 
       possibleLocales.push(...subsets);
     }
@@ -257,7 +265,7 @@ export default class Mnoga {
       possibleLocales
         // Swap any locales that have aliases with their alias.
         .map((l) => this.aliases[l] || l)
-        .find((l) => this.hasTranslationsForLocale(l));
+        .filter((l) => this.hasTranslationsForLocale(l))[0];
 
     if (matchedLocale !== this.locale) {
       this.locale = matchedLocale;
@@ -283,7 +291,7 @@ export default class Mnoga {
       }
     };
 
-    const hasChanges = locales.map(mapper).includes(true);
+    const hasChanges = includes(locales.map(mapper), true);
 
     if (hasChanges) {
       this.callSubscribers();
@@ -439,7 +447,7 @@ export default class Mnoga {
       }
     };
 
-    const hasChanges = locales.map(mapper).includes(true);
+    const hasChanges = includes(locales.map(mapper), true);
 
     if (hasChanges) {
       this.callSubscribers();
@@ -457,12 +465,8 @@ export default class Mnoga {
     // better debugging purposes, though, print a warning stating that there is no rule for this
     // locale.
     if (rule === undefined) {
-      if (this.pluralWarning === undefined) {
-        this.pluralWarning = new Set();
-      }
-
-      if (!this.pluralWarning.has(language)) {
-        this.pluralWarning.add(language);
+      if (!this.pluralWarning[language]) {
+        this.pluralWarning[language] = true;
         console.warn(`No pluralization rule found for ${locale}.`);
       }
     }

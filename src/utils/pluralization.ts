@@ -1,3 +1,5 @@
+import { includes } from './array';
+
 /**
  * Contains pluralization rules that can be used.
  *
@@ -49,9 +51,9 @@ export function eastSlavic(n: number): PluralCategory {
 
   if (mod10 === 1 && mod100 !== 11) {
     return PluralCategory.One;
-  } else if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) {
+  } else if (includes([2, 3, 4], mod10) && !includes([12, 13, 14], mod100)) {
     return PluralCategory.Few;
-  } else if (mod10 === 0 || [5, 6, 7, 8, 9].includes(mod10) || [11, 12, 13, 14].includes(mod100)) {
+  } else if (mod10 === 0 || includes([5, 6, 7, 8, 9], mod10) || includes([11, 12, 13, 14], mod100)) {
     return PluralCategory.Many;
   }
 
@@ -90,9 +92,9 @@ export function polish(n: number): PluralCategory {
 
   if (n === 1) {
     return PluralCategory.One;
-  } else if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) {
+  } else if (includes([2, 3, 4], mod10) && !includes([12, 13, 14], mod100)) {
     return PluralCategory.Few;
-  } else if ([0, 1, 5, 6, 7, 8, 9].includes(mod10) || [12, 13, 14].includes(mod100)) {
+  } else if (includes([0, 1, 5, 6, 7, 8, 9], mod10) || includes([12, 13, 14], mod100)) {
     return PluralCategory.Many;
   }
 
@@ -102,7 +104,7 @@ export function polish(n: number): PluralCategory {
 export function westSlavic(n: number): PluralCategory {
   if (n === 1) {
     return PluralCategory.One;
-  } else if ([2, 3, 4].includes(n)) {
+  } else if (includes([2, 3, 4], n)) {
     return PluralCategory.Few;
   }
 
