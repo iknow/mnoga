@@ -370,4 +370,48 @@ describe('Mnoga', () => {
       expect(mnoga.t('key.context')).to.equal('string');
     });
   });
+
+  describe('callSubscribers', () => {
+    it('calls subscribers', () => {
+      const subscriberOne = spy();
+      const subscriberTwo = spy();
+
+      mnoga.subscribe(subscriberOne);
+      mnoga.subscribe(subscriberTwo);
+
+      // Just do something to trigger callSubscribers.
+      mnoga.setRule('en', () => PluralCategory.Other);
+
+      expect(subscriberOne.calledOnce).to.be.true;
+      expect(subscriberTwo.calledOnce).to.be.true;
+    });
+
+    it('does not call subscribers added by subscriber', () => {
+      const subscriberAddedBySubscriber = spy();
+
+      mnoga.subscribe(() => {
+        mnoga.subscribe(subscriberAddedBySubscriber);
+      });
+
+      // Just do something to trigger callSubscribers.
+      mnoga.setRule('en', () => PluralCategory.Other);
+
+      expect(subscriberAddedBySubscriber.called).to.be.false;
+    });
+
+    it('calls subscribers added by subscriber the next time callSubscribers is triggered', () => {
+      const subscriberAddedBySubscriber = spy();
+
+      const unsubscribe = mnoga.subscribe(() => {
+        mnoga.subscribe(subscriberAddedBySubscriber);
+      });
+
+      // Just do something to trigger callSubscribers.
+      mnoga.setRule('en', () => PluralCategory.Other);
+      unsubscribe();
+      mnoga.setRule('en', () => PluralCategory.Other);
+
+      expect(subscriberAddedBySubscriber.calledOnce).to.be.true;
+    });
+  });
 });
