@@ -407,7 +407,10 @@ export default class Mnoga {
   }
 
   protected callSubscribers(): void {
-    this.subscribers.map((subscriber) => subscriber());
+    // Make a copy of the subscribers before iterating over them in case one of the subscribers
+    // triggers a call to `this.subscribe`.
+    const currentSubscribers = this.subscribers.slice();
+    currentSubscribers.forEach((subscriber) => subscriber());
   }
 
   /**
