@@ -978,8 +978,8 @@ img { max-width: 100%; }
 const mnoga = <span class="hljs-keyword">new</span> Mnoga();
 
 <span class="hljs-comment">// Set translations for japanese and english.</span>
-mnoga.setTranslations(<span class="hljs-string">'ja'</span>, ja);
-mnoga.setTranslations(<span class="hljs-string">'en'</span>, en);
+mnoga.setPhrases(<span class="hljs-string">'ja'</span>, ja);
+mnoga.setPhrases(<span class="hljs-string">'en'</span>, en);
 
 <span class="hljs-comment">// Set the fallback locale. `en` is already the default.</span>
 mnoga.setFallback(<span class="hljs-string">'en'</span>);
@@ -1013,7 +1013,7 @@ mnoga.t(<span class="hljs-string">'admin.header.logged-in-as'</span>, { username
 			tag to see if there are any reasonable matches to fallback on.</p>
 			<pre><code>const mnoga = <span class="hljs-function"><span class="hljs-keyword">new</span> <span class="hljs-title">Mnoga</span>();
 
-<span class="hljs-title">mnoga</span>.<span class="hljs-title">setTranslations</span>('zh', {});
+<span class="hljs-title">mnoga</span>.<span class="hljs-title">setPhrases</span>('zh', {});
 
 <span class="hljs-comment">// If the locale contains script and region, it will fallback and choose zh.</span>
 <span class="hljs-title">mnoga</span>.<span class="hljs-title">setLocale</span>('zh-<span class="hljs-type">Hant</span>-<span class="hljs-type">HK</span>');
@@ -1031,8 +1031,8 @@ mnoga.t(<span class="hljs-string">'admin.header.logged-in-as'</span>, { username
 			as the officially supported locale.</p>
 			<pre><code><span class="hljs-keyword">const</span> mnoga = <span class="hljs-keyword">new</span> Mnoga();
 
-mnoga.setTranslations(<span class="hljs-string">'zh-Hans'</span>, {});
-mnoga.setTranslations(<span class="hljs-string">'zh-Hant'</span>, {});
+mnoga.setPhrases(<span class="hljs-string">'zh-Hans'</span>, {});
+mnoga.setPhrases(<span class="hljs-string">'zh-Hant'</span>, {});
 
 <span class="hljs-comment">// Mainland china should use simplified Chinese.</span>
 mnoga.setAlias([<span class="hljs-string">'zh'</span>, <span class="hljs-string">'zh-CN'</span>], <span class="hljs-string">'zh-Hans'</span>);
@@ -1051,8 +1051,8 @@ mnoga.getLocale();  <span class="hljs-comment">// zh-Hant</span>
 			British English, but also want users from Australia to use British English.</p>
 			<pre><code><span class="hljs-keyword">const</span> mnoga = <span class="hljs-keyword">new</span> Mnoga();
 
-mnoga.setTranslations(<span class="hljs-string">'en-US'</span>, {});
-mnoga.setTranslations(<span class="hljs-string">'en-GB'</span>, {});
+mnoga.setPhrases(<span class="hljs-string">'en-US'</span>, {});
+mnoga.setPhrases(<span class="hljs-string">'en-GB'</span>, {});
 
 mnoga.setAlias(<span class="hljs-string">'en-AU'</span>, <span class="hljs-string">'en-GB'</span>);
 
@@ -1064,14 +1064,14 @@ mnoga.getLocale();  <span class="hljs-comment">// en-GB</span>
 			cause the method to be executed.</p>
 			<pre><code><span class="hljs-keyword">const</span> mnoga = <span class="hljs-keyword">new</span> Mnoga();
 
-<span class="hljs-comment">// Will update the title whenever locale or translations change.</span>
+<span class="hljs-comment">// Will update the title whenever locale or phrases change.</span>
 <span class="hljs-keyword">const</span> render = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
   <span class="hljs-built_in">document</span>.head.title = mnoga.t(<span class="hljs-string">'title'</span>);
 };
 
 <span class="hljs-comment">// Set some translations.</span>
-mnoga.setTranslations(<span class="hljs-string">'en'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'English Homepage'</span> });
-mnoga.setTranslations(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'日本語ホムページ'</span> });
+mnoga.setPhrases(<span class="hljs-string">'en'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'English Homepage'</span> });
+mnoga.setPhrases(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'日本語ホムページ'</span> });
 
 <span class="hljs-comment">// Returns an unsubscribe method that can be called if we want to stop listening for changes.</span>
 <span class="hljs-keyword">const</span> unsubscribe = mnoga.subscribe(update);
@@ -1081,7 +1081,7 @@ mnoga.setLocale(<span class="hljs-string">'ja'</span>);
 <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>.head.title); <span class="hljs-comment">// '日本語ホムページ'</span>
 
 <span class="hljs-comment">// Changing the translations will call subscribe.</span>
-mnoga.setTranslations(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'新しい日本語ホムページ'</span> });
+mnoga.setPhrases(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'新しい日本語ホムページ'</span> });
 <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>.head.title); <span class="hljs-comment">// '新しい日本語ホムページ'</span>
 </code></pre><h2 id="supported-languages-and-extending-support">Supported Languages and Extending Support</h2>
 			<p>The following locales are supported out of the box: <em>af</em>, <em>ar</em>, <em>be</em>, <em>cs</em>, <em>de</em>, <em>el</em>, <em>en</em>, <em>es</em>,
@@ -1114,6 +1114,8 @@ mnoga.setRule(<span class="hljs-string">'en'</span>, rulesForEnglish);
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-external-module"><a href="modules/_index_.html" class="tsd-kind-icon">"index"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_utils_languagetag_.html" class="tsd-kind-icon">"utils/<wbr>Language<wbr>Tag"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_utils_array_.html" class="tsd-kind-icon">"utils/array"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_utils_i18n_.html" class="tsd-kind-icon">"utils/i18n"</a></li>
 							<li class="tsd-kind-external-module"><a href="modules/_utils_pluralization_.html" class="tsd-kind-icon">"utils/pluralization"</a></li>
 						</ul>
 					</section>
