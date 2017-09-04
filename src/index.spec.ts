@@ -31,7 +31,11 @@ describe('Mnoga', () => {
 
     callback();
 
-    expect(handler.calledOnce).to.equal(expected);
+    if (expected) {
+      expect(handler.calledOnce, 'callSubscribers calls handler once').to.be.true;
+    } else {
+      expect(handler.called, 'callSubscribers does not call handler').to.be.false;
+    }
   };
 
   beforeEach(() => {
