@@ -37,38 +37,43 @@ export interface Aliases {
  [propName: string]: string | undefined;
 }
 
-interface Set {
-  [propName: string]: boolean | undefined;
-}
-
-export interface Translations {
-  [propName: string]: Translations | string | undefined;
-}
-
-export interface TData {
+/**
+ * Interface for data passed to the `lookupTranslation` method. The keys in the data structure will
+ * replace the variables in the string.
+ * @param count Magic variable that is used for looking up the pluralization context in the key.
+ */
+export interface LookupData {
   count?: number;
   [propName: string]: string | number | undefined;
 }
 
 /**
- * @param data
- * @param delimiter
- * @param interpolationFormat
- * @param key
- * @param keyFormat
- * @param locales
- * @param rules
- * @param translations
+ * Options passed to the `t` method.
+ * @param data                Data used to interpolate the phrase.
+ * @param delimiter           Delimiter for splitting the key into contexts.
+ * @param interpolationFormat RegExp to capture variable names in a phrase.
+ * @param key                 Key for looking up a phrase.
+ * @param keyFormat           RegExp for validating the key.
+ * @param locales             List of locales to check until a phrase is found.
+ * @param phrases             Locale keyed hash that contains JSON nested structure of phrases.
+ * @param rules               Locale keyed hash that can be used to find a pluralization rule callback.
  */
-export interface TOptions {
-  data: TData;
+export interface LookupOptions {
+  data?: LookupData;
   delimiter?: string;
   interpolationFormat?: RegExp;
   key: string;
   keyFormat?: RegExp;
   locales: string[];
+  phrases: Phrases;
   rules?: Rules;
-  translations: Translations;
+}
+
+/**
+ * Nested structure for looking up strings of keys.
+ */
+export interface Phrases {
+  [propName: string]: Phrases | string | undefined;
 }
 
 export interface Rule {
@@ -77,6 +82,10 @@ export interface Rule {
 
 export interface Rules {
   [propName: string]: Rule | undefined;
+}
+
+interface Set {
+  [propName: string]: boolean | undefined;
 }
 
 // The rules that will be used if no rules are specified.
@@ -124,7 +133,7 @@ export const DEFAULT_RULES: Rules = Object.freeze({
  * @returns                 The first locale that exactly matches or has a subset that matches.
  *                          Results can be undefined if no match is found.
  */
-export function localeLookup(
+export function lookupLocale(
   preferredLocales: string | string[],
   supportedLocales: string[],
   aliases?: Aliases
@@ -192,8 +201,8 @@ function isAlias(aliases: Aliases | undefined): aliases is Aliases {
   return typeof aliases === 'object';
 }
 
-function isTranslations(translations: Translations[string]): translations is Translations {
-  return typeof translations === 'object';
+export function isPhrases(phrases: Phrases[string]): phrases is Phrases {
+  return typeof phrases === 'object';
 }
 
 /**
@@ -247,13 +256,31 @@ export function getCanonicalLocales(locales: string | string[]): string[] {
 }
 
 /**
- * Look up a translation with the given key and locales.
+ * Look up a phrase with the given key and locales.
  *
  * NOTE: Locales that are passed into this method are not normalized. It is important do this if
  * the list of locales are arbitrary (for example, an end users browser). Look into using
  * `getCanonicalLocales` on locales, rule keys and translation keys.
+ *
+ * NOTE: The `phrases` key should contain supported locales at the top level. For example,
+ * a valid format would look like:
+ *
+ * ```
+ * {
+ *   "en": {
+ *     "context_1": {
+ *       "context_2": "english phrase"
+ *     }
+ *   },
+ *   "ja": {
+ *     "context_1": {
+ *       "context_2": "japanese phrase"
+ *     }
+ *   }
+ * }
+ * ```
  */
-export function t(options: TOptions): string {
+export function lookupPhrase(options: LookupOptions): string {
   const {
     data = {},
     delimiter = DELIMITER,
@@ -261,8 +288,8 @@ export function t(options: TOptions): string {
     key = '',
     keyFormat = VALID_KEY,
     locales = [],
+    phrases = {},
     rules = DEFAULT_RULES,
-    translations = {},
   } = options;
 
   // If the key is a not valid (or not even a string), throw an error.
@@ -272,29 +299,29 @@ export function t(options: TOptions): string {
       `Valid keys are of the format ${keyFormat.toString()}`);
   }
 
-  // Loop through the locales and try to find an appropriate translation.
+  // Loop through the locales and try to find an appropriate phrase.
   for (let i = 0; i < locales.length; i++) {
     const locale = locales[i];
     const contexts = key.split(delimiter);
 
-    let translation: Translations[string] = translations[locale];
+    let phrase: Phrases[string] = phrases[locale];
 
-    // Iterate through the contexts, getting the next value in the translations.
+    // Iterate through the contexts, getting the next value in the phrases.
     for (let j = 0; j < contexts.length; j++) {
       const context = contexts[j];
-      translation = isTranslations(translation) ? translation[context] : undefined;
+      phrase = isPhrases(phrase) ? phrase[context] : undefined;
     }
 
     // If there is a count and an object comes back, check if this key is a plural context.
-    if (isTranslations(translation) && typeof data.count === 'number') {
+    if (isPhrases(phrase) && typeof data.count === 'number') {
       const rule: Rule = rules[locale] || other;
       const context = rule(data.count);
-      translation = translation[context];
+      phrase = phrase[context];
     }
 
-    // If the translation is equal to string, interpolate and return.
-    if (typeof translation === 'string') {
-      return translation
+    // If the phrase is equal to string, interpolate and return.
+    if (typeof phrase === 'string') {
+      return phrase
         .replace(interpolationFormat, (exp, arg) => {
           const result = data[arg];
           return typeof result === 'string' ? result :

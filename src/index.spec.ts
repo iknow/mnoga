@@ -6,7 +6,7 @@ import { PluralCategory } from './utils/pluralization';
 describe('Mnoga', () => {
   let mnoga: Mnoga;
 
-  const EN_TRANSLATIONS = {
+  const EN_PHRASES = {
     app: {
       pluralize: {
         one: '%{count} cat',
@@ -17,7 +17,7 @@ describe('Mnoga', () => {
     },
   };
 
-  const JA_TRANSLATIONS = {
+  const JA_PHRASES = {
     app: {
       pluralize: '%{count}匹',
       label: 'アップストリング',
@@ -37,8 +37,8 @@ describe('Mnoga', () => {
 
   beforeEach(() => {
     mnoga = new Mnoga();
-    mnoga.setTranslations('en', EN_TRANSLATIONS);
-    mnoga.setTranslations('ja', JA_TRANSLATIONS);
+    mnoga.setPhrases('en', EN_PHRASES);
+    mnoga.setPhrases('ja', JA_PHRASES);
   });
 
   describe('deleteAlias', () => {
@@ -71,10 +71,10 @@ describe('Mnoga', () => {
     });
   });
 
-  describe('deleteTranslations', () => {
-    it('deletes the translations', () => {
+  describe('deletePhrases', () => {
+    it('deletes the phrases', () => {
       const before = mnoga.t('app.pluralize', { count: 1 });
-      mnoga.deleteTranslations('en');
+      mnoga.deletePhrases('en');
       const after = mnoga.t('app.pluralize', { count: 1 });
 
       expect(before).to.equal('1 cat');
@@ -82,11 +82,11 @@ describe('Mnoga', () => {
     });
 
     it('calls subscriber', () => {
-      callsSubscribers(() => mnoga.deleteTranslations('en'), true);
+      callsSubscribers(() => mnoga.deletePhrases('en'), true);
     });
 
     it('does not call subscriber', () => {
-      callsSubscribers(() => mnoga.deleteTranslations('zh-yue'), false);
+      callsSubscribers(() => mnoga.deletePhrases('zh-yue'), false);
     });
   });
 
@@ -124,23 +124,23 @@ describe('Mnoga', () => {
     });
   });
 
-  describe('hasTranslationsForLocale', () => {
+  describe('hasPhrasesForLocale', () => {
     it('returns true', () => {
-      expect(mnoga.hasTranslationsForLocale('en')).to.equal(true);
+      expect(mnoga.hasPhrasesForLocale('en')).to.equal(true);
     });
 
-    it('returns true after setting a translation', () => {
-      mnoga.setTranslations('zh-yue', {});
-      expect(mnoga.hasTranslationsForLocale('zh-yue')).to.equal(true);
+    it('returns true after setting a phrase', () => {
+      mnoga.setPhrases('zh-yue', {});
+      expect(mnoga.hasPhrasesForLocale('zh-yue')).to.equal(true);
     });
 
     it('returns false', () => {
-      expect(mnoga.hasTranslationsForLocale('zh-yue')).to.equal(false);
+      expect(mnoga.hasPhrasesForLocale('zh-yue')).to.equal(false);
     });
 
-    it('returns false after removing translation', () => {
-      mnoga.deleteTranslations('en');
-      expect(mnoga.hasTranslationsForLocale('en')).to.equal(false);
+    it('returns false after removing phrase', () => {
+      mnoga.deletePhrases('en');
+      expect(mnoga.hasPhrasesForLocale('en')).to.equal(false);
     });
   });
 
@@ -202,46 +202,46 @@ describe('Mnoga', () => {
     });
 
     it('normalizes locale', () => {
-      mnoga.setTranslations('zh-Hant-HK', {});
+      mnoga.setPhrases('zh-Hant-HK', {});
       mnoga.setLocale('ZH-hANT-hk');
       expect(mnoga.getLocale()).to.equal('zh-Hant-HK');
     });
 
     it('falls back to script when given a tag containing script and region', () => {
-      mnoga.setTranslations('zh-Hant', {});
-      mnoga.setTranslations('zh', {});
+      mnoga.setPhrases('zh-Hant', {});
+      mnoga.setPhrases('zh', {});
       mnoga.setLocale('zh-Hant-HK');
       expect(mnoga.getLocale()).to.equal('zh-Hant');
     });
 
     it('falls back to language when given a tag containing script and region', () => {
-      mnoga.setTranslations('zh', {});
+      mnoga.setPhrases('zh', {});
       mnoga.setLocale('zh-Hant-HK');
       expect(mnoga.getLocale()).to.equal('zh');
     });
 
     it('falls back to language when given a tag containing script', () => {
-      mnoga.setTranslations('zh', {});
+      mnoga.setPhrases('zh', {});
       mnoga.setLocale('zh-Hant');
       expect(mnoga.getLocale()).to.equal('zh');
     });
 
     it('falls back to language when given a tag containing region', () => {
-      mnoga.setTranslations('zh', {});
+      mnoga.setPhrases('zh', {});
       mnoga.setLocale('zh-HK');
       expect(mnoga.getLocale()).to.equal('zh');
     });
 
     it('does not change order of preferences', () => {
-      mnoga.setTranslations('pt', {});
-      mnoga.setTranslations('zh', {});
+      mnoga.setPhrases('pt', {});
+      mnoga.setPhrases('zh', {});
       mnoga.setLocale(['zh-Hant-HK', 'pt', 'zh']);
       expect(mnoga.getLocale()).to.equal('pt');
     });
 
     it('tries more specific locale before attempting fallbacks', () => {
-      mnoga.setTranslations('zh-Hant', {});
-      mnoga.setTranslations('zh-Hant-TW', {});
+      mnoga.setPhrases('zh-Hant', {});
+      mnoga.setPhrases('zh-Hant-TW', {});
       mnoga.setLocale(['zh-Hant-HK', 'zh-Hant-TW']);
       expect(mnoga.getLocale()).to.equal('zh-Hant-TW');
     })
@@ -252,7 +252,7 @@ describe('Mnoga', () => {
     });
 
     it('uses alias when setting the locale', () => {
-      mnoga.setTranslations('zh-yue', {});
+      mnoga.setPhrases('zh-yue', {});
       mnoga.setAlias('zh-Hant', 'zh-yue');
       mnoga.setLocale('zh-Hant-HK');
       expect(mnoga.getLocale()).to.equal('zh-yue');
@@ -285,9 +285,9 @@ describe('Mnoga', () => {
     });
   });
 
-  describe('setTranslations', () => {
+  describe('setPhrases', () => {
     it('fails if passed a non valid locale', () => {
-      expect(() => mnoga.setTranslations(INVALID_LOCALE, {})).to.throw();
+      expect(() => mnoga.setPhrases(INVALID_LOCALE, {})).to.throw();
     });
   });
 
@@ -352,22 +352,22 @@ describe('Mnoga', () => {
     });
 
     it('uses custom fallback if provided', () => {
-      mnoga.setTranslations('zh-yue', { app: { no: { string: 'test' } } });
+      mnoga.setPhrases('zh-yue', { app: { no: { string: 'test' } } });
       expect(mnoga.t('app.no.string', {}, { fallback: 'zh-yue' }));
     });
 
     it('normalizes custom fallback', () => {
-      mnoga.setTranslations('zh-yue', { app: { no: { string: 'test' } } });
+      mnoga.setPhrases('zh-yue', { app: { no: { string: 'test' } } });
       expect(mnoga.t('app.no.string', {}, { fallback: 'ZH-YUE' }));
     });
 
     it('works without delimiters', () => {
-      mnoga.setTranslations('en', { key: 'string' });
+      mnoga.setPhrases('en', { key: 'string' });
       expect(mnoga.t('key')).to.equal('string');
     });
 
     it('works with delimiters', () => {
-      mnoga.setTranslations('en', { key: { context: 'string' } });
+      mnoga.setPhrases('en', { key: { context: 'string' } });
       expect(mnoga.t('key.context')).to.equal('string');
     });
   });

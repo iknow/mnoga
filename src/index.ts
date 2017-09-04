@@ -4,19 +4,20 @@ import {
   DEFAULT_RULES,
   getCanonicalLocale,
   getCanonicalLocales,
-  localeLookup,
+  isPhrases,
+  LookupData,
+  lookupLocale,
+  lookupPhrase,
+  Phrases,
   Rule,
   Rules,
-  t,
-  Translations,
-  TData,
   VALID_KEY_CONTEXT,
 } from './utils/i18n';
 
 // Default locale is english.
 const DEFAULT_LOCALE = 'en';
 
-export interface TOptions {
+export interface LookupOptions {
   fallback?: string;
   locale?: string;
 }
@@ -30,9 +31,9 @@ export default class Mnoga {
   private fallback: string = DEFAULT_LOCALE;
   private keyMode: boolean = false;
   private locale?: string;
+  private phrases: Phrases = {};
   private rules: Rules = { ...DEFAULT_RULES };
   private subscribers: Function[] = [];
-  private translations: Translations = {};
 
   /**
    * Remove an alias to a locale.
@@ -51,11 +52,11 @@ export default class Mnoga {
   }
 
   /**
-   * Remove a set of translation for a locale.
-   * @param locale  Locale or list of locales that have a set of translations.
+   * Remove a set of phrases for a locale.
+   * @param locale  Locale or list of locales that have a set of phrases.
    */
-  public deleteTranslations(locale: string | string[]) {
-    this.deleteFrom(locale, this.translations);
+  public deletePhrases(locale: string | string[]) {
+    this.deleteFrom(locale, this.phrases);
   }
 
   /**
@@ -73,16 +74,16 @@ export default class Mnoga {
   }
 
   /**
-   * @returns The locale that is primarily being used to look up translations. This may actually be
+   * @returns The locale that is primarily being used to look up phrases. This may actually be
    *          the fallback locale if no suitable locales have been passed to setLocale.
    */
   public getLocale(): string {
     return this.locale || this.fallback;
   }
 
-  public hasTranslationsForLocale(locale: string): boolean {
+  public hasPhrasesForLocale(locale: string): boolean {
     const normalizedLocale = getCanonicalLocale(locale);
-    return this.isTranslations(this.translations[normalizedLocale]);
+    return isPhrases(this.phrases[normalizedLocale]);
   }
 
   /**
@@ -92,13 +93,13 @@ export default class Mnoga {
    * setLocale. An ideal use for this method is when you don't technically support a region/locale,
    * but have a decent fallback for it.
    *
-   * For example, let's say you have translations for `['en-US', 'en-GB']`. You might prefer a user
+   * For example, let's say you have phrases for `['en-US', 'en-GB']`. You might prefer a user
    * with locale `en-AU` to fallback to `en-GB`, even though it's not technically supported.
    *
    * ```
    * const mnoga = new Mnoga();
    *
-   * mnoga.setTranslations('en-GB', { ... });
+   * mnoga.setPhrases('en-GB', { ... });
    * mnoga.setAlias('en-AU', 'en-GB');
    * mnoga.setLocale('en-AU');
    * mnoga.getLocale(); // will print 'en-GB'
@@ -117,11 +118,11 @@ export default class Mnoga {
       throw new Error(`${locale} cannot already be an alias.`);
     }
 
-    // Make sure no aliases have a translation.
+    // Throw an error if any of the aliases has phrases.
     aliases
       .forEach((a) => {
-        if (this.hasTranslationsForLocale(a)) {
-          throw new Error(`${a} has translations set and should not be used as an alias.`);
+        if (this.hasPhrasesForLocale(a)) {
+          throw new Error(`${a} has phrases set and should not be used as an alias.`);
         }
       });
 
@@ -143,7 +144,7 @@ export default class Mnoga {
 
   /**
    * Sets a locale to fallback to when a string is unavailable for the main locale. Ideally, the
-   * fallback locale has a translation for every key.
+   * fallback locale has a phrase for every key.
    *
    * @param fallback  Locale that should be used when primary locale can't be found.
    */
@@ -172,16 +173,16 @@ export default class Mnoga {
    * fallback sequence for the provided locale. For example, `['zh-Hant-HK', 'zh-Hant-TW']`
    * would try to match: `['zh-Hant-HK', 'zh-Hant-TW', 'zh-Hant', 'zh']`.
    *
-   * If passed an array of locales in order of preferences, the first locale that has translations
-   * will be chosen. If no translations are found, then locale will be unset and fallback will be
+   * If passed an array of locales in order of preferences, the first locale that has phrases
+   * will be chosen. If no phrases are found, then locale will be unset and fallback will be
    * used.
    *
-   * This method should be called after setting up all rules and translations. If called before, a
+   * This method should be called after setting up all rules and phrases. If called before, a
    * locale might be considered unavailable and will not be chosen.
    */
   public setLocale(locale: string | string[]): void {
-    const supportedLocales = Object.keys(this.translations);
-    const matchedLocale = localeLookup(locale, supportedLocales, this.aliases);
+    const supportedLocales = Object.keys(this.phrases);
+    const matchedLocale = lookupLocale(locale, supportedLocales, this.aliases);
 
     if (matchedLocale !== this.locale) {
       this.locale = matchedLocale;
@@ -215,18 +216,18 @@ export default class Mnoga {
   }
 
   /**
-   * Sets the translations for a particular locale or locales.
+   * Sets the phrases for a particular locale or locales.
    *
-   * @param locale        Locale or list of locales that the translations should be linked to.
-   * @param translations  Nested JSON object, where object values are treated as additional context
-   *                      and string values are treated as translations. Other values are not valid.
+   * @param locale   Locale or list of locales that the phrases should be linked to.
+   * @param phrases  Nested JSON object, where object values are treated as additional context
+   *                 and string values are treated as phrases. Other values are not valid.
    */
-  public setTranslations(locale: string | string[], translations: Translations): void {
+  public setPhrases(locale: string | string[], phrases: Phrases): void {
     const locales = getCanonicalLocales(locale);
-    const clonedTranslations = this.cloneTranslations(translations);
+    const clonedPhrases = this.clonePhrases(phrases);
 
     locales.forEach((l) => {
-      this.translations[l] = clonedTranslations;
+      this.phrases[l] = clonedPhrases;
     });
 
     this.callSubscribers();
@@ -252,11 +253,12 @@ export default class Mnoga {
    * using the primary locale, then will use the fallback if there is no match. If there are no
    * matches, then the key will be returned.
    *
-   * @param key   The key for looking up the string. Context should be delimited with a period.
-   * @param data  Contains data to be interpolated. `count` is a magic value for pluralization.
+   * @param key     The key for looking up the string. Context should be delimited with a period.
+   * @param data    Contains data to be interpolated. `count` is a magic value for pluralization.
+   * @param options DEPRECATED. Do not use these as they will not be removed from the library.
    * @returns     Best string match for key given.
    */
-  public t(key: string, data: TData = {}, options: TOptions = {}): string {
+  public t(key: string, data: LookupData = {}, options: LookupOptions = {}): string {
     // If key mode is enabled, simply return the key.
     if (this.getKeyMode()) {
       return key;
@@ -278,7 +280,7 @@ export default class Mnoga {
       locales.push(this.fallback);
     }
 
-    return t({ data, key, locales, rules: this.rules, translations: this.translations });
+    return lookupPhrase({ data, key, locales, rules: this.rules, phrases: this.phrases });
   }
 
   protected callSubscribers(): void {
@@ -289,30 +291,30 @@ export default class Mnoga {
   }
 
   /**
-   * Clones the translations object passed in. However, it will also verify that each context
+   * Clones the phrases object passed in. However, it will also verify that each context
    * of a key is valid.
    */
-  private cloneTranslations(translations: Translations): Translations {
-    const newTranslations = { ...translations };
+  private clonePhrases(phrases: Phrases): Phrases {
+    const newPhrases = { ...phrases };
 
-    for(const context in newTranslations) {
+    for(const context in newPhrases) {
       if (!context.match(VALID_KEY_CONTEXT)) {
         throw new Error(
           `${context} is not a valid key context. ` +
           `Valid keys should be of the format ${VALID_KEY_CONTEXT.toString()}.`);
       }
 
-      const value = newTranslations[context];
+      const value = newPhrases[context];
 
-      if (this.isTranslations(value)) {
-        newTranslations[context] = this.cloneTranslations(value);
+      if (isPhrases(value)) {
+        newPhrases[context] = this.clonePhrases(value);
       }
     }
 
-    return newTranslations;
+    return newPhrases;
   }
 
-  private deleteFrom(locale: string | string[], lookup: Aliases | Rules | Translations): void {
+  private deleteFrom(locale: string | string[], lookup: Aliases | Rules | Phrases): void {
     const locales = getCanonicalLocales(locale);
     const mapper = (l: string) => {
       if (l in lookup) {
@@ -328,9 +330,5 @@ export default class Mnoga {
     if (hasChanges) {
       this.callSubscribers();
     }
-  }
-
-  private isTranslations(translations: Translations[string]): translations is Translations {
-    return typeof translations === 'object';
   }
 }

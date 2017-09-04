@@ -86,8 +86,8 @@ import en from './en';
 const mnoga = new Mnoga();
 
 // Set translations for japanese and english.
-mnoga.setTranslations('ja', ja);
-mnoga.setTranslations('en', en);
+mnoga.setPhrases('ja', ja);
+mnoga.setPhrases('en', en);
 
 // Set the fallback locale. `en` is already the default.
 mnoga.setFallback('en');
@@ -126,7 +126,7 @@ tag to see if there are any reasonable matches to fallback on.
 ```
 const mnoga = new Mnoga();
 
-mnoga.setTranslations('zh', {});
+mnoga.setPhrases('zh', {});
 
 // If the locale contains script and region, it will fallback and choose zh.
 mnoga.setLocale('zh-Hant-HK');
@@ -148,8 +148,8 @@ as the officially supported locale.
 ```
 const mnoga = new Mnoga();
 
-mnoga.setTranslations('zh-Hans', {});
-mnoga.setTranslations('zh-Hant', {});
+mnoga.setPhrases('zh-Hans', {});
+mnoga.setPhrases('zh-Hant', {});
 
 // Mainland china should use simplified Chinese.
 mnoga.setAlias(['zh', 'zh-CN'], 'zh-Hans');
@@ -172,8 +172,8 @@ British English, but also want users from Australia to use British English.
 ```
 const mnoga = new Mnoga();
 
-mnoga.setTranslations('en-US', {});
-mnoga.setTranslations('en-GB', {});
+mnoga.setPhrases('en-US', {});
+mnoga.setPhrases('en-GB', {});
 
 mnoga.setAlias('en-AU', 'en-GB');
 
@@ -190,14 +190,14 @@ cause the method to be executed.
 ```
 const mnoga = new Mnoga();
 
-// Will update the title whenever locale or translations change.
+// Will update the title whenever locale or phrases change.
 const render = () => {
   document.head.title = mnoga.t('title');
 };
 
 // Set some translations.
-mnoga.setTranslations('en', { title: 'English Homepage' });
-mnoga.setTranslations('ja', { title: '日本語ホムページ' });
+mnoga.setPhrases('en', { title: 'English Homepage' });
+mnoga.setPhrases('ja', { title: '日本語ホムページ' });
 
 // Returns an unsubscribe method that can be called if we want to stop listening for changes.
 const unsubscribe = mnoga.subscribe(update);
@@ -207,7 +207,7 @@ mnoga.setLocale('ja');
 console.log(document.head.title); // '日本語ホムページ'
 
 // Changing the translations will call subscribe.
-mnoga.setTranslations('ja', { title: '新しい日本語ホムページ' });
+mnoga.setPhrases('ja', { title: '新しい日本語ホムページ' });
 console.log(document.head.title); // '新しい日本語ホムページ'
 ```
 
@@ -234,6 +234,43 @@ const rulesForEnglish = (count) => {
 
 // Sets this rule for English.
 mnoga.setRule('en', rulesForEnglish);
+```
+
+## Utilities
+
+Utility methods are also provided if you want to maintain your own state.
+
+```
+import { getCanonicalLocales, lookupLocale, lookupPhrase } from 'mnoga/utils/i18n';
+
+// Returns a canonical format of a locale or multiple locales.
+getCanonicalLocales('EN-US');                       // ['en-US']
+getCanonicalLocales(['EN-US', 'ZH-HANT-TW', 'Fr']); // ['en-US', 'zh-Hant-TW', 'fr']
+
+// Gets a preferred locale.
+const supportedLocales = ['zh-Hant', 'zh-Hans', 'pt', 'en'];
+lookupLocale('zh-Hant-TW', supportedLocales);            // zh-Hant
+lookupLocale('zh-Hans-CN', supportedLocales);            // zh-Hans
+lookupLocale(['pt-BR', 'en'], supportedLocales);         // pt
+lookupLocale('zh', supportedLocales, { zh: 'zh-Hans' }); // zh-Hans
+
+// Lookup a phrase. Be sure to canonicalize the locales.
+const phrases = {
+  en: {
+    context_1: {
+      context_2: 'English Phrase',
+    },
+  },
+  ja: {
+    context_1: {
+      context_2: 'Japanese Phrase',
+    },
+  },
+};
+
+lookupPhrase({ key: 'context_1.context_2', locales: ['ja'], phrases });       // Japanese Phrase
+lookupPhrase({ key: 'context_1.context_2', locales: ['fr', 'en'], phrases }); // English Phrase
+lookupPhrase({ key: 'context_1.context_2', locales: ['pt'], phrases });       // context_1.context_2
 ```
 
 ## Further Reading
