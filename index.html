@@ -1102,6 +1102,38 @@ mnoga.setPhrases(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr
 
 <span class="hljs-comment">// Sets this rule for English.</span>
 mnoga.setRule(<span class="hljs-string">'en'</span>, rulesForEnglish);
+</code></pre><h2 id="utilities">Utilities</h2>
+			<p>Utility methods are also provided if you want to maintain your own state.</p>
+			<pre><code><span class="hljs-keyword">import</span> { getCanonicalLocales, lookupLocale, lookupPhrase } from <span class="hljs-string">'mnoga/utils/i18n'</span>;
+
+<span class="hljs-comment">// Returns a canonical format of a locale or multiple locales.</span>
+getCanonicalLocales(<span class="hljs-string">'EN-US'</span>);                       <span class="hljs-comment">// ['en-US']</span>
+getCanonicalLocales([<span class="hljs-string">'EN-US'</span>, <span class="hljs-string">'ZH-HANT-TW'</span>, <span class="hljs-string">'Fr'</span>]); <span class="hljs-comment">// ['en-US', 'zh-Hant-TW', 'fr']</span>
+
+<span class="hljs-comment">// Gets a preferred locale.</span>
+const supportedLocales = [<span class="hljs-string">'zh-Hant'</span>, <span class="hljs-string">'zh-Hans'</span>, <span class="hljs-string">'pt'</span>, <span class="hljs-string">'en'</span>];
+lookupLocale(<span class="hljs-string">'zh-Hant-TW'</span>, supportedLocales);            <span class="hljs-comment">// zh-Hant</span>
+lookupLocale(<span class="hljs-string">'zh-Hans-CN'</span>, supportedLocales);            <span class="hljs-comment">// zh-Hans</span>
+lookupLocale([<span class="hljs-string">'pt-BR'</span>, <span class="hljs-string">'en'</span>], supportedLocales);         <span class="hljs-comment">// pt</span>
+lookupLocale(<span class="hljs-string">'zh'</span>, supportedLocales, { <span class="hljs-string">zh:</span> <span class="hljs-string">'zh-Hans'</span> }); <span class="hljs-comment">// zh-Hans</span>
+
+<span class="hljs-comment">// Lookup a phrase. Be sure to canonicalize the locales.</span>
+const phrases = {
+<span class="hljs-symbol">  en:</span> {
+<span class="hljs-symbol">    context_1:</span> {
+<span class="hljs-symbol">      context_2:</span> <span class="hljs-string">'English Phrase'</span>,
+    },
+  },
+<span class="hljs-symbol">  ja:</span> {
+<span class="hljs-symbol">    context_1:</span> {
+<span class="hljs-symbol">      context_2:</span> <span class="hljs-string">'Japanese Phrase'</span>,
+    },
+  },
+};
+
+lookupPhrase({ <span class="hljs-string">key:</span> <span class="hljs-string">'context_1.context_2'</span>, <span class="hljs-string">locales:</span> [<span class="hljs-string">'ja'</span>], phrases });       <span class="hljs-comment">// Japanese Phrase</span>
+lookupPhrase({ <span class="hljs-string">key:</span> <span class="hljs-string">'context_1.context_2'</span>, <span class="hljs-string">locales:</span> [<span class="hljs-string">'fr'</span>, <span class="hljs-string">'en'</span>], phrases }); <span class="hljs-comment">// English Phrase</span>
+lookupPhrase({ <span class="hljs-string">key:</span> <span class="hljs-string">'context_1.context_2'</span>, <span class="hljs-string">locales:</span> [<span class="hljs-string">'pt'</span>], phrases });       <span class="hljs-comment">// context_1.context_2</span>
 </code></pre><h2 id="further-reading">Further Reading</h2>
 			<p>To find out more about the functionality available, please check out the <a href="https://iknow.github.io/mnoga/classes/_index_.mnoga.html">API documentation</a>.</p>
 		</div>

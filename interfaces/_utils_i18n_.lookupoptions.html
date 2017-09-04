@@ -987,7 +987,7 @@ img { max-width: 100%; }
 			<a href="../modules/_utils_i18n_.html#isphrases" class="tsd-kind-icon">is<wbr>Phrases</a>
 		</li>
 		<li class=" tsd-kind-function tsd-parent-kind-external-module">
-			<a href="../modules/_utils_i18n_.html#localelookup" class="tsd-kind-icon">locale<wbr>Lookup</a>
+			<a href="../modules/_utils_i18n_.html#lookuplocale" class="tsd-kind-icon">lookup<wbr>Locale</a>
 		</li>
 		<li class=" tsd-kind-function tsd-parent-kind-external-module">
 			<a href="../modules/_utils_i18n_.html#lookupphrase" class="tsd-kind-icon">lookup<wbr>Phrase</a>
@@ -1006,7 +1006,8 @@ img { max-width: 100%; }
 				</div>
 				<dl class="tsd-comment-tags">
 					<dt>param</dt>
-					<dd></dd>
+					<dd><p>Data used to interpolate the phrase.</p>
+					</dd>
 					<dt>param</dt>
 					<dd><p>Delimiter for splitting the key into contexts.</p>
 					</dd>
@@ -1023,10 +1024,11 @@ img { max-width: 100%; }
 					<dd><p>List of locales to check until a phrase is found.</p>
 					</dd>
 					<dt>param</dt>
-					<dd><p>Locale keyed hash that can be used to find a pluralization rule callback.</p>
+					<dd><p>Locale keyed hash that contains JSON nested structure of phrases.</p>
 					</dd>
 					<dt>param</dt>
-					<dd></dd>
+					<dd><p>Locale keyed hash that can be used to find a pluralization rule callback.</p>
+					</dd>
 				</dl>
 			</div>
 		</section>
@@ -1062,11 +1064,11 @@ img { max-width: 100%; }
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="data" class="tsd-anchor"></a>
-				<h3>data</h3>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> data</h3>
 				<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <a href="_utils_i18n_.lookupdata.html" class="tsd-signature-type">LookupData</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ae72d52/src/utils/i18n.ts#L62">utils/i18n.ts:62</a></li>
+						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ab4b2ef/src/utils/i18n.ts#L62">utils/i18n.ts:62</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1076,7 +1078,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">delimiter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ae72d52/src/utils/i18n.ts#L63">utils/i18n.ts:63</a></li>
+						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ab4b2ef/src/utils/i18n.ts#L63">utils/i18n.ts:63</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1086,7 +1088,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">interpolation<wbr>Format<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RegExp</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ae72d52/src/utils/i18n.ts#L64">utils/i18n.ts:64</a></li>
+						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ab4b2ef/src/utils/i18n.ts#L64">utils/i18n.ts:64</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1096,7 +1098,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ae72d52/src/utils/i18n.ts#L65">utils/i18n.ts:65</a></li>
+						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ab4b2ef/src/utils/i18n.ts#L65">utils/i18n.ts:65</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1106,7 +1108,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">key<wbr>Format<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RegExp</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ae72d52/src/utils/i18n.ts#L66">utils/i18n.ts:66</a></li>
+						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ab4b2ef/src/utils/i18n.ts#L66">utils/i18n.ts:66</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1116,7 +1118,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">locales<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ae72d52/src/utils/i18n.ts#L67">utils/i18n.ts:67</a></li>
+						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ab4b2ef/src/utils/i18n.ts#L67">utils/i18n.ts:67</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1126,7 +1128,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">phrases<span class="tsd-signature-symbol">:</span> <a href="_utils_i18n_.phrases.html" class="tsd-signature-type">Phrases</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ae72d52/src/utils/i18n.ts#L68">utils/i18n.ts:68</a></li>
+						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ab4b2ef/src/utils/i18n.ts#L68">utils/i18n.ts:68</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1136,7 +1138,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">rules<span class="tsd-signature-symbol">:</span> <a href="_utils_i18n_.rules.html" class="tsd-signature-type">Rules</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ae72d52/src/utils/i18n.ts#L69">utils/i18n.ts:69</a></li>
+						<li>Defined in <a href="https://github.com/iknow/mnoga/blob/ab4b2ef/src/utils/i18n.ts#L69">utils/i18n.ts:69</a></li>
 					</ul>
 				</aside>
 			</section>
