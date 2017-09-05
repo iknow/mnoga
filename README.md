@@ -26,7 +26,7 @@ npm install @engoo/mnoga
 If you are using yarn:
 
 ```
-yarn install --add @engoo/mnoga
+yarn add @engoo/mnoga
 ```
 
 ## Basic Usage
