@@ -8,7 +8,7 @@
     "build": "tsc",
     "docs:build": "typedoc --theme minimal --excludePrivate --out docs src/index && touch docs/.nojekyll",
     "docs:publish": "npm run docs:build && gh-pages --dotfiles -d docs",
-    "postinstall": "tsc",
+    "prepublishOnly": "tsc",
     "preversion": "npm test",
     "postversion": "git push && git push --tags && npm run docs:publish",
     "test": "mocha -r ts-node/register 'src/**/*.spec.ts'"
