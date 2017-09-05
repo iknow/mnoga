@@ -3,7 +3,6 @@
   "version": "0.1.4",
   "description": "Simple internationalization library for Javascript.",
   "license": "MIT",
-  "main": "dist",
   "scripts": {
     "build": "tsc",
     "docs:build": "typedoc --theme minimal --excludePrivate --out docs src/index && touch docs/.nojekyll",

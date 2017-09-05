@@ -5,7 +5,7 @@
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "dist",
+    "outDir": ".",
     "removeComments": true,
     "strictNullChecks": true,
     "target": "ES5",
