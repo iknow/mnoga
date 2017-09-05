@@ -78,7 +78,7 @@ Let's use the library to print a few strings.
 ### `index.js`
 
 ```
-import Mnoga from 'mnoga';
+import Mnoga from '@engoo/mnoga';
 import ja from './ja';
 import en from './en';
 
