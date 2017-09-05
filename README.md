@@ -241,7 +241,7 @@ mnoga.setRule('en', rulesForEnglish);
 Utility methods are also provided if you want to maintain your own state.
 
 ```
-import { getCanonicalLocales, lookupLocale, lookupPhrase } from 'mnoga/utils/i18n';
+import { getCanonicalLocales, lookupLocale, lookupPhrase } from '@engoo/mnoga/utils/i18n';
 
 // Returns a canonical format of a locale or multiple locales.
 getCanonicalLocales('EN-US');                       // ['en-US']
