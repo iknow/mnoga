@@ -20,13 +20,13 @@ Mnoga (/ˈmnɔɡa/) is the Polish word for "plural."
 If you are using npm:
 
 ```
-npm install mnoga
+npm install @engoo/mnoga
 ```
 
 If you are using yarn:
 
 ```
-yarn install --add mnoga
+yarn install --add @engoo/mnoga
 ```
 
 ## Basic Usage
