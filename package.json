@@ -1,6 +1,6 @@
 {
   "name": "@engoo/mnoga",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simple internationalization library for Javascript.",
   "license": "MIT",
   "main": "dist",
