@@ -197,18 +197,18 @@ const render = () => {
 
 // Set some translations.
 mnoga.setPhrases('en', { title: 'English Homepage' });
-mnoga.setPhrases('ja', { title: '日本語ホムページ' });
+mnoga.setPhrases('ja', { title: '日本語ホ-ムページ' });
 
 // Returns an unsubscribe method that can be called if we want to stop listening for changes.
 const unsubscribe = mnoga.subscribe(update);
 
 // Changing the locale will call subscribe.
 mnoga.setLocale('ja');
-console.log(document.head.title); // '日本語ホムページ'
+console.log(document.head.title); // '日本語ホ-ムページ'
 
 // Changing the translations will call subscribe.
-mnoga.setPhrases('ja', { title: '新しい日本語ホムページ' });
-console.log(document.head.title); // '新しい日本語ホムページ'
+mnoga.setPhrases('ja', { title: '新しい日本語ホ-ムページ' });
+console.log(document.head.title); // '新しい日本語ホ-ムページ'
 ```
 
 ## Supported Languages and Extending Support
@@ -258,18 +258,18 @@ lookupLocale('zh', supportedLocales, { zh: 'zh-Hans' }); // zh-Hans
 const phrases = {
   en: {
     context_1: {
-      context_2: 'English Phrase',
+      context_2: 'English',
     },
   },
   ja: {
     context_1: {
-      context_2: 'Japanese Phrase',
+      context_2: '日本語',
     },
   },
 };
 
-lookupPhrase({ key: 'context_1.context_2', locales: ['ja'], phrases });       // Japanese Phrase
-lookupPhrase({ key: 'context_1.context_2', locales: ['fr', 'en'], phrases }); // English Phrase
+lookupPhrase({ key: 'context_1.context_2', locales: ['ja'], phrases });       // 日本語
+lookupPhrase({ key: 'context_1.context_2', locales: ['fr', 'en'], phrases }); // English
 lookupPhrase({ key: 'context_1.context_2', locales: ['pt'], phrases });       // context_1.context_2
 ```
 
