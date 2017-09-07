@@ -1071,18 +1071,18 @@ mnoga.getLocale();  <span class="hljs-comment">// en-GB</span>
 
 <span class="hljs-comment">// Set some translations.</span>
 mnoga.setPhrases(<span class="hljs-string">'en'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'English Homepage'</span> });
-mnoga.setPhrases(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'日本語ホムページ'</span> });
+mnoga.setPhrases(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'日本語ホ-ムページ'</span> });
 
 <span class="hljs-comment">// Returns an unsubscribe method that can be called if we want to stop listening for changes.</span>
 <span class="hljs-keyword">const</span> unsubscribe = mnoga.subscribe(update);
 
 <span class="hljs-comment">// Changing the locale will call subscribe.</span>
 mnoga.setLocale(<span class="hljs-string">'ja'</span>);
-<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>.head.title); <span class="hljs-comment">// '日本語ホムページ'</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>.head.title); <span class="hljs-comment">// '日本語ホ-ムページ'</span>
 
 <span class="hljs-comment">// Changing the translations will call subscribe.</span>
-mnoga.setPhrases(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'新しい日本語ホムページ'</span> });
-<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>.head.title); <span class="hljs-comment">// '新しい日本語ホムページ'</span>
+mnoga.setPhrases(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr">title</span>: <span class="hljs-string">'新しい日本語ホ-ムページ'</span> });
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>.head.title); <span class="hljs-comment">// '新しい日本語ホ-ムページ'</span>
 </code></pre><h2 id="supported-languages-and-extending-support">Supported Languages and Extending Support</h2>
 			<p>The following locales are supported out of the box: <em>af</em>, <em>ar</em>, <em>be</em>, <em>cs</em>, <em>de</em>, <em>el</em>, <em>en</em>, <em>es</em>,
 				<em>fi</em>, <em>fr</em>, <em>hi</em>, <em>id</em>, <em>it</em>, <em>iu</em>, <em>ja</em>, <em>ko</em>, <em>ms</em>, <em>my</em>,  <em>ne</em>, <em>nl</em>, <em>pl</em>, <em>pt</em>, <em>sk</em>, <em>sw</em>,
@@ -1121,18 +1121,18 @@ lookupLocale(<span class="hljs-string">'zh'</span>, supportedLocales, { <span cl
 const phrases = {
 <span class="hljs-symbol">  en:</span> {
 <span class="hljs-symbol">    context_1:</span> {
-<span class="hljs-symbol">      context_2:</span> <span class="hljs-string">'English Phrase'</span>,
+<span class="hljs-symbol">      context_2:</span> <span class="hljs-string">'English'</span>,
     },
   },
 <span class="hljs-symbol">  ja:</span> {
 <span class="hljs-symbol">    context_1:</span> {
-<span class="hljs-symbol">      context_2:</span> <span class="hljs-string">'Japanese Phrase'</span>,
+<span class="hljs-symbol">      context_2:</span> <span class="hljs-string">'日本語'</span>,
     },
   },
 };
 
-lookupPhrase({ <span class="hljs-string">key:</span> <span class="hljs-string">'context_1.context_2'</span>, <span class="hljs-string">locales:</span> [<span class="hljs-string">'ja'</span>], phrases });       <span class="hljs-comment">// Japanese Phrase</span>
-lookupPhrase({ <span class="hljs-string">key:</span> <span class="hljs-string">'context_1.context_2'</span>, <span class="hljs-string">locales:</span> [<span class="hljs-string">'fr'</span>, <span class="hljs-string">'en'</span>], phrases }); <span class="hljs-comment">// English Phrase</span>
+lookupPhrase({ <span class="hljs-string">key:</span> <span class="hljs-string">'context_1.context_2'</span>, <span class="hljs-string">locales:</span> [<span class="hljs-string">'ja'</span>], phrases });       <span class="hljs-comment">// 日本語</span>
+lookupPhrase({ <span class="hljs-string">key:</span> <span class="hljs-string">'context_1.context_2'</span>, <span class="hljs-string">locales:</span> [<span class="hljs-string">'fr'</span>, <span class="hljs-string">'en'</span>], phrases }); <span class="hljs-comment">// English</span>
 lookupPhrase({ <span class="hljs-string">key:</span> <span class="hljs-string">'context_1.context_2'</span>, <span class="hljs-string">locales:</span> [<span class="hljs-string">'pt'</span>], phrases });       <span class="hljs-comment">// context_1.context_2</span>
 </code></pre><h2 id="further-reading">Further Reading</h2>
 			<p>To find out more about the functionality available, please check out the <a href="https://iknow.github.io/mnoga/classes/_index_.mnoga.html">API documentation</a>.</p>
