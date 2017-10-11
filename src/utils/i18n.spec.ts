@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { getCanonicalLocales, lookupLocale, lookupPhrase } from './i18n';
+import { getCanonicalLocales, getFallbackPattern, lookupLocale, lookupPhrase } from './i18n';
 import { PluralCategory } from './pluralization';
 
 describe('getCanonicalLocales', () => {
@@ -9,6 +9,32 @@ describe('getCanonicalLocales', () => {
 
   it('canonicalizes all locales', () => {
     expect(getCanonicalLocales(['EN-US', 'ZH-HANT-TW', 'Fr'])).to.eql(['en-US', 'zh-Hant-TW', 'fr']);
+  });
+});
+
+describe('getFallbackPattern', () => {
+  it('throws on an invalid locale', () => {
+    expect(() => getFallbackPattern('bogus-locale')).to.throw();
+  });
+
+  it('is inclusive', () => {
+    expect(getFallbackPattern('zh')).to.eql(['zh']);
+  });
+
+  it('returns fallback with a region and script', () => {
+    expect(getFallbackPattern('zh-Hant-HK')).to.eql(['zh-Hant-HK', 'zh-Hant', 'zh']);
+  });
+
+  it('returns fallback with a region', () => {
+    expect(getFallbackPattern('zh-HK')).to.eql(['zh-HK', 'zh']);
+  });
+
+  it('returns fallback with a script', () => {
+    expect(getFallbackPattern('zh-Hant')).to.eql(['zh-Hant', 'zh']);
+  });
+
+  it('returns strings canonicalized', () => {
+    expect(getFallbackPattern('zh-hant-hk')).to.eql(['zh-Hant-HK', 'zh-Hant', 'zh']);
   });
 });
 

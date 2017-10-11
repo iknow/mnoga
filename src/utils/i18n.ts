@@ -174,13 +174,13 @@ export function lookupLocale(
 
     possibleLocales.push(current);
 
-    // Create subsets of current and add them to the list of possible locales.
-    // Only add them if they aren't subsets of the next locale or if they appear later in the
+    // Create fallbacks of current and add them to the list of possible locales.
+    // Only add them if they aren't fallbacks of the next locale or if they appear later in the
     // preference list.
     const next = normalizedPreferredlocales[i + 1] || '';
-    const subsets = makeSubsets(current).filter((s) => !baseSet[s] && next.search(s) === -1);
+    const fallbacks = getFallbackPattern(current).filter((s) => !baseSet[s] && next.search(s) === -1);
 
-    possibleLocales.push(...subsets);
+    possibleLocales.push(...fallbacks);
   }
 
   const matchedLocales =
@@ -206,29 +206,29 @@ export function isPhrases(phrases: Phrases[string]): phrases is Phrases {
 }
 
 /**
- * Generates viable subsets from a given locale.
- *
+ * Creates a fallback chain for a locale.
+ * 
  * Examples:
  * ```
- * new LanguageTag('zh-Hant-HK').makeSubsets()    // ['zh-Hant', 'zh']
- * new LanguageTag('zh-HK').makeSubsets()         // ['zh']
- * new LanguageTag('zh-Hant').makeSubsets()       // ['zh']
- * new LanguageTag('zh').makeSubsets()            // []
+ * getFallbackPattern('zh-Hant-HK')    // ['zh-Hant-HK', 'zh-Hant', 'zh']
+ * getFallbackPattern('zh-HK')         // ['zh-HK', 'zh']
+ * getFallbackPattern('zh-Hant')       // ['zh-Hant', 'zh']
+ * getFallbackPattern('zh')            // ['zh']
  * ```
  */
-function makeSubsets(locale: string): string[] {
-  const subsets: string[] = [];
+export function getFallbackPattern(locale: string): string[] {
   const languageTag = new LanguageTag(locale);
+  const fallbacks: string[] = [languageTag.toString()];
 
   if (languageTag.hasRegion() && languageTag.hasScript()) {
-    subsets.push(`${languageTag.language}-${languageTag.script}`);
+    fallbacks.push(`${languageTag.language}-${languageTag.script}`);
   }
 
   if (languageTag.language !== languageTag.toString()) {
-    subsets.push(languageTag.language);
+    fallbacks.push(languageTag.language);
   }
 
-  return subsets;
+  return fallbacks;
 }
 
 /**
