@@ -1104,11 +1104,15 @@ mnoga.setPhrases(<span class="hljs-string">'ja'</span>, { <span class="hljs-attr
 mnoga.setRule(<span class="hljs-string">'en'</span>, rulesForEnglish);
 </code></pre><h2 id="utilities">Utilities</h2>
 			<p>Utility methods are also provided if you want to maintain your own state.</p>
-			<pre><code><span class="hljs-keyword">import</span> { getCanonicalLocales, lookupLocale, lookupPhrase } from <span class="hljs-string">'@engoo/mnoga/utils/i18n'</span>;
+			<pre><code><span class="hljs-keyword">import</span> { getCanonicalLocales, getFallbackPattern, lookupLocale, lookupPhrase } from <span class="hljs-string">'@engoo/mnoga/utils/i18n'</span>;
 
 <span class="hljs-comment">// Returns a canonical format of a locale or multiple locales.</span>
 getCanonicalLocales(<span class="hljs-string">'EN-US'</span>);                       <span class="hljs-comment">// ['en-US']</span>
 getCanonicalLocales([<span class="hljs-string">'EN-US'</span>, <span class="hljs-string">'ZH-HANT-TW'</span>, <span class="hljs-string">'Fr'</span>]); <span class="hljs-comment">// ['en-US', 'zh-Hant-TW', 'fr']</span>
+
+<span class="hljs-comment">// Canonicalized fallback pattern based on a locale.</span>
+getFallbackPattern(<span class="hljs-string">'zh-Hant-TW'</span>);  <span class="hljs-comment">// ['zh-Hant-TW', 'zh-Hant', 'zh']</span>
+getFallbackPattern(<span class="hljs-string">'en-US'</span>);       <span class="hljs-comment">// ['en-US', 'en']</span>
 
 <span class="hljs-comment">// Gets a preferred locale.</span>
 const supportedLocales = [<span class="hljs-string">'zh-Hant'</span>, <span class="hljs-string">'zh-Hans'</span>, <span class="hljs-string">'pt'</span>, <span class="hljs-string">'en'</span>];
