@@ -241,11 +241,15 @@ mnoga.setRule('en', rulesForEnglish);
 Utility methods are also provided if you want to maintain your own state.
 
 ```
-import { getCanonicalLocales, lookupLocale, lookupPhrase } from '@engoo/mnoga/utils/i18n';
+import { getCanonicalLocales, getFallbackPattern, lookupLocale, lookupPhrase } from '@engoo/mnoga/utils/i18n';
 
 // Returns a canonical format of a locale or multiple locales.
 getCanonicalLocales('EN-US');                       // ['en-US']
 getCanonicalLocales(['EN-US', 'ZH-HANT-TW', 'Fr']); // ['en-US', 'zh-Hant-TW', 'fr']
+
+// Canonicalized fallback pattern based on a locale.
+getFallbackPattern('zh-Hant-TW');  // ['zh-Hant-TW', 'zh-Hant', 'zh']
+getFallbackPattern('en-US');       // ['en-US', 'en']
 
 // Gets a preferred locale.
 const supportedLocales = ['zh-Hant', 'zh-Hans', 'pt', 'en'];
