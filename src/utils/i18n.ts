@@ -207,7 +207,7 @@ export function isPhrases(phrases: Phrases[string]): phrases is Phrases {
 
 /**
  * Creates a fallback chain for a locale.
- * 
+ *
  * Examples:
  * ```
  * getFallbackPattern('zh-Hant-HK')    // ['zh-Hant-HK', 'zh-Hant', 'zh']
@@ -333,4 +333,13 @@ export function lookupPhrase(options: LookupOptions): string {
 
   // Fallback to the key.
   return key;
+}
+
+export function isValidLanguageTag(languageTag: string): boolean {
+  try {
+    new LanguageTag(languageTag);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }

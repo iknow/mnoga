@@ -1,5 +1,11 @@
 import { expect } from 'chai';
-import { getCanonicalLocales, getFallbackPattern, lookupLocale, lookupPhrase } from './i18n';
+import {
+  getCanonicalLocales,
+  getFallbackPattern,
+  lookupLocale,
+  lookupPhrase,
+  isValidLanguageTag
+} from './i18n';
 import { PluralCategory } from './pluralization';
 
 describe('getCanonicalLocales', () => {
@@ -129,4 +135,31 @@ describe('lookupPhrase', () => {
     const keyFormat = /[a-z0-9|]+/;
     expect(lookupPhrase({ delimiter, key, keyFormat, locales: ['en'], phrases })).to.equal('English Phrase');
   });
+});
+
+describe('isValidLanguageTag', () => {
+  it('returns true', () => {
+    [
+      'aaa-aaaaaaaaa',
+      'aaa-',
+      'aaa',
+      'aa-',
+      'aa',
+    ].forEach((locale) => {
+      expect(isValidLanguageTag(locale)).to.be.true;
+    });
+  });
+
+  it('returns false', () => {
+    [
+      'aaaa-',
+      'aaaa-',
+      'aaaa',
+      'a-',
+      'a',
+      '',
+    ].forEach((locale) => {
+      expect(isValidLanguageTag(locale)).to.be.false;
+    });
+  })
 });
