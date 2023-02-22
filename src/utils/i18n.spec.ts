@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { getCanonicalLocales, getFallbackPattern, lookupLocale, lookupPhrase } from './i18n';
+import { getCanonicalLocales, getFallbackPattern, lookupLocale, lookupPhrase, mergePhrases, Phrases } from './i18n';
 import { PluralCategory } from './pluralization';
 
 describe('getCanonicalLocales', () => {
@@ -128,5 +128,97 @@ describe('lookupPhrase', () => {
     const key = 'context1|context2';
     const keyFormat = /[a-z0-9|]+/;
     expect(lookupPhrase({ delimiter, key, keyFormat, locales: ['en'], phrases })).to.equal('English Phrase');
+  });
+});
+
+describe('mergePhrases', () => {
+  let target: Phrases;
+  let target2: Phrases;
+
+  beforeEach(() => {
+    target = {};
+    target2 = {};
+  });
+
+  it('merges phrases together', () => {
+    target = {
+      other: 'a',
+    };
+    target2 = {
+      other: 'b',
+    };
+    mergePhrases([target, target2], { key: 'value' })
+    expect(target).to.deep.equal({
+      key: 'value',
+      other: 'a',
+    });
+    expect(target2).to.deep.equal({
+      key: 'value',
+      other: 'b',
+    });
+  });
+
+  it('throws on invalid key name', () => {
+    expect(() => mergePhrases([target], { 'invalid$': '' })).to.throw();
+  });
+
+  it('overwrites objects with strings', () => {
+    target = {
+      foo: {
+        bar: 'baz',
+      },
+      other: 'a',
+    };
+    mergePhrases([target], {
+      foo: 'bar',
+    });
+    expect(target).to.deep.equal({
+      foo: 'bar',
+      other: 'a',
+    });
+  });
+
+  it('overwrites strings with objects', () => {
+    target = {
+      foo: 'bar',
+      other: 'a',
+    };
+    mergePhrases([target], {
+      foo: {
+        bar: 'baz',
+      },
+    });
+    expect(target).to.deep.equal({
+      foo: {
+        bar: 'baz',
+      },
+      other: 'a',
+    });
+  });
+
+  it('creates missing keys in multiple targets', () => {
+    target = {
+      foo: {
+        bar: 'bar',
+      },
+    };
+    mergePhrases([target, target2], {
+      foo: {
+        baz: 'baz',
+      },
+    });
+
+    // ensure it does not clear the key if it already exists
+    expect(target).to.deep.equal({
+      foo: {
+        bar: 'bar',
+        baz: 'baz',
+      }
+    });
+    expect(target2).to.deep.equal({
+      foo: {
+        baz: 'baz',
+      }
+    });
   });
 });

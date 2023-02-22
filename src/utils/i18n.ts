@@ -334,3 +334,39 @@ export function lookupPhrase(options: LookupOptions): string {
   // Fallback to the key.
   return key;
 }
+
+/**
+ * Merges a phrase object into zero or more phrase objects.
+ *
+ * The context names of keys will also be validated.
+ */
+export function mergePhrases(targets: Phrases[], phrases: Phrases): void {
+  for (const context in phrases) {
+    if (!context.match(VALID_KEY_CONTEXT)) {
+      throw new Error(
+        `${context} is not a valid key context. ` +
+        `Valid keys should be of the format ${VALID_KEY_CONTEXT.toString()}.`);
+    }
+
+    const value = phrases[context];
+
+    if (isPhrases(value)) {
+      let newTargets: Phrases[] = [];
+      for (const target of targets) {
+        const contextedTarget = target[context];
+        if (!isPhrases(contextedTarget)) {
+          const newTarget: Phrases = {};
+          target[context] = newTarget;
+          newTargets.push(newTarget);
+        } else {
+          newTargets.push(contextedTarget);
+        }
+      }
+      mergePhrases(newTargets, value);
+    } else {
+      for (const target of targets) {
+        target[context] = value;
+      }
+    }
+  }
+}

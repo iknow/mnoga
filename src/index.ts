@@ -8,10 +8,10 @@ import {
   LookupData,
   lookupLocale,
   lookupPhrase,
+  mergePhrases,
   Phrases,
   Rule,
   Rules,
-  VALID_KEY_CONTEXT,
 } from './utils/i18n';
 
 // Default locale is english.
@@ -31,7 +31,7 @@ export default class Mnoga {
   private fallback: string = DEFAULT_LOCALE;
   private keyMode: boolean = false;
   private locale?: string;
-  private phrases: Phrases = {};
+  private phrases: { [locale: string]: Phrases } = {};
   private rules: Rules = { ...DEFAULT_RULES };
   private subscribers: Function[] = [];
 
@@ -224,11 +224,31 @@ export default class Mnoga {
    */
   public setPhrases(locale: string | string[], phrases: Phrases): void {
     const locales = getCanonicalLocales(locale);
-    const clonedPhrases = this.clonePhrases(phrases);
 
     locales.forEach((l) => {
-      this.phrases[l] = clonedPhrases;
+      this.phrases[l] = {};
     });
+    mergePhrases(locales.map(l => this.phrases[l]), phrases);
+
+    this.callSubscribers();
+  }
+
+  /**
+   * Add additional phrases into the specified locale or locales.
+   *
+   * @param locale   Locale or list of locales that the phrases should be linked to.
+   * @param phrases  Nested JSON object, where object values are treated as additional context
+   *                 and string values are treated as phrases. Other values are not valid.
+   */
+  public addPhrases(locale: string | string[], phrases: Phrases): void {
+    const locales = getCanonicalLocales(locale);
+
+    locales.forEach((l) => {
+      if (this.phrases[l] === undefined) {
+        this.phrases[l] = {};
+      }
+    });
+    mergePhrases(locales.map(l => this.phrases[l]), phrases);
 
     this.callSubscribers();
   }
@@ -288,30 +308,6 @@ export default class Mnoga {
     // triggers a call to `this.subscribe`.
     const currentSubscribers = this.subscribers.slice();
     currentSubscribers.forEach((subscriber) => subscriber());
-  }
-
-  /**
-   * Clones the phrases object passed in. However, it will also verify that each context
-   * of a key is valid.
-   */
-  private clonePhrases(phrases: Phrases): Phrases {
-    const newPhrases = { ...phrases };
-
-    for(const context in newPhrases) {
-      if (!context.match(VALID_KEY_CONTEXT)) {
-        throw new Error(
-          `${context} is not a valid key context. ` +
-          `Valid keys should be of the format ${VALID_KEY_CONTEXT.toString()}.`);
-      }
-
-      const value = newPhrases[context];
-
-      if (isPhrases(value)) {
-        newPhrases[context] = this.clonePhrases(value);
-      }
-    }
-
-    return newPhrases;
   }
 
   private deleteFrom(locale: string | string[], lookup: Aliases | Rules | Phrases): void {

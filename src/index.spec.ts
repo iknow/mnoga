@@ -293,6 +293,64 @@ describe('Mnoga', () => {
     it('fails if passed a non valid locale', () => {
       expect(() => mnoga.setPhrases(INVALID_LOCALE, {})).to.throw();
     });
+
+    it('overwrites existing phrases', () => {
+      mnoga.setPhrases('en', {
+        app: {
+          label: 'Overwritten',
+        },
+        other: 'nothing'
+      });
+
+      expect(mnoga.t('app.pluralize', { count: 1 })).to.equal('app.pluralize')
+      expect(mnoga.t('app.label')).to.equal('Overwritten')
+      expect(mnoga.t('other')).to.equal('nothing')
+    });
+
+    it('sets multiple locales', () => {
+      mnoga.setPhrases(['en', 'ja'], {
+        app: {
+          label: 'Overwritten',
+        },
+      });
+
+      expect(mnoga.t('app.label')).to.equal('Overwritten');
+      expect(mnoga.t('app.label', {}, { locale: 'ja' })).to.equal('Overwritten');
+      expect(mnoga.t('app.pluralize', { count: 1 })).to.equal('app.pluralize');
+      expect(mnoga.t('app.pluralize', { count: 1 }, { locale: 'ja' })).to.equal('app.pluralize');
+    });
+  });
+
+  describe('addPhrases', () => {
+    it('fails if passed a non valid locale', () => {
+      expect(() => mnoga.addPhrases(INVALID_LOCALE, {})).to.throw();
+    });
+
+    it('adds to existing phrases', () => {
+      mnoga.addPhrases('en', {
+        app: {
+          label: 'Overwritten',
+        },
+        other: 'nothing',
+      });
+
+      expect(mnoga.t('app.pluralize', { count: 1 })).to.equal('1 cat')
+      expect(mnoga.t('app.label')).to.equal('Overwritten')
+      expect(mnoga.t('other')).to.equal('nothing')
+    });
+
+    it('adds to multiple locales', () => {
+      mnoga.addPhrases(['en', 'ja'], {
+        app: {
+          label: 'Overwritten',
+        },
+      });
+
+      expect(mnoga.t('app.label')).to.equal('Overwritten');
+      expect(mnoga.t('app.label', {}, { locale: 'ja' })).to.equal('Overwritten');
+      expect(mnoga.t('app.pluralize', { count: 1 })).to.equal('1 cat');
+      expect(mnoga.t('app.pluralize', { count: 1 }, { locale: 'ja' })).to.equal('1匹');
+    });
   });
 
   describe('subscribe', () => {
