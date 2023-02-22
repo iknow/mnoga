@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "docs:build": "typedoc --theme minimal --excludePrivate --out docs src/index && touch docs/.nojekyll",
+    "docs:build": "typedoc --theme default --excludePrivate --out docs src/index.ts && touch docs/.nojekyll",
     "docs:publish": "npm run docs:build && gh-pages --dotfiles -d docs",
     "prepublishOnly": "tsc",
     "preversion": "npm test",
@@ -38,7 +38,8 @@
     "pre-commit": "^1.2.2",
     "sinon": "^15.0.1",
     "ts-node": "^10.9.1",
-    "typedocs": "^0.6.7",
+    "typedoc": "^0.23.25",
+    "typedoc-plugin-rename-defaults": "^0.6.4",
     "typescript": "^4.9.5"
   }
 }
