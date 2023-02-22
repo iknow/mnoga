@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "docs:build": "typedoc --theme minimal --excludePrivate --out docs src/index && touch docs/.nojekyll",
+    "docs:build": "typedoc --theme default --excludePrivate --out docs src/index.ts && touch docs/.nojekyll",
     "docs:publish": "npm run docs:build && gh-pages --dotfiles -d docs",
     "prepublishOnly": "tsc",
     "preversion": "npm test",
@@ -29,16 +29,17 @@
   },
   "homepage": "https://github.com/iknow/mnoga#readme",
   "devDependencies": {
-    "@types/chai": "^4.0.4",
-    "@types/mocha": "^2.2.42",
-    "@types/sinon": "^2.3.3",
-    "chai": "^4.1.1",
-    "gh-pages": "^1.0.0",
-    "mocha": "^3.5.0",
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
+    "@types/sinon": "^10.0.13",
+    "chai": "^4.3.7",
+    "gh-pages": "^5.0.0",
+    "mocha": "^10.2.0",
     "pre-commit": "^1.2.2",
-    "sinon": "^3.2.1",
-    "ts-node": "^3.3.0",
-    "typedocs": "^0.6.3",
-    "typescript": "^2.4.2"
+    "sinon": "^15.0.1",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.25",
+    "typedoc-plugin-rename-defaults": "^0.6.4",
+    "typescript": "^4.9.5"
   }
 }

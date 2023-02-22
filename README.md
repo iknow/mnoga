@@ -279,4 +279,4 @@ lookupPhrase({ key: 'context_1.context_2', locales: ['pt'], phrases });       //
 
 ## Further Reading
 
-To find out more about the functionality available, please check out the [API documentation](https://iknow.github.io/mnoga/classes/_index_.mnoga.html).
+To find out more about the functionality available, please check out the [API documentation](https://iknow.github.io/mnoga/classes/Mnoga.html).
