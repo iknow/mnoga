@@ -9,6 +9,7 @@ import {
   lookupLocale,
   lookupPhrase,
   mergePhrases,
+  validatePhrases,
   Phrases,
   Rule,
   Rules,
@@ -225,10 +226,11 @@ export default class Mnoga {
   public setPhrases(locale: string | string[], phrases: Phrases): void {
     const locales = getCanonicalLocales(locale);
 
+    validatePhrases(phrases);
     locales.forEach((l) => {
       this.phrases[l] = {};
+      mergePhrases(this.phrases[l], phrases);
     });
-    mergePhrases(locales.map(l => this.phrases[l]), phrases);
 
     this.callSubscribers();
   }
@@ -243,12 +245,13 @@ export default class Mnoga {
   public addPhrases(locale: string | string[], phrases: Phrases): void {
     const locales = getCanonicalLocales(locale);
 
+    validatePhrases(phrases);
     locales.forEach((l) => {
       if (this.phrases[l] === undefined) {
         this.phrases[l] = {};
       }
+      mergePhrases(this.phrases[l], phrases);
     });
-    mergePhrases(locales.map(l => this.phrases[l]), phrases);
 
     this.callSubscribers();
   }

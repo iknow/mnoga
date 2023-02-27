@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { getCanonicalLocales, getFallbackPattern, lookupLocale, lookupPhrase, mergePhrases, Phrases } from './i18n';
+import { getCanonicalLocales, getFallbackPattern, lookupLocale, lookupPhrase, mergePhrases, Phrases, validatePhrases } from './i18n';
 import { PluralCategory } from './pluralization';
 
 describe('getCanonicalLocales', () => {
@@ -131,35 +131,36 @@ describe('lookupPhrase', () => {
   });
 });
 
+describe('validatePhrases', () => {
+  it('throws on invalid key name', () => {
+    expect(() => validatePhrases({ 'invalid$': '' })).to.throw();
+  });
+});
+
 describe('mergePhrases', () => {
   let target: Phrases;
-  let target2: Phrases;
 
   beforeEach(() => {
     target = {};
-    target2 = {};
   });
 
   it('merges phrases together', () => {
     target = {
       other: 'a',
     };
-    target2 = {
-      other: 'b',
-    };
-    mergePhrases([target, target2], { key: 'value' })
+    mergePhrases(target, {
+      key: 'value',
+      foo: {
+        bar: 'baz',
+      },
+    })
     expect(target).to.deep.equal({
       key: 'value',
+      foo: {
+        bar: 'baz',
+      },
       other: 'a',
     });
-    expect(target2).to.deep.equal({
-      key: 'value',
-      other: 'b',
-    });
-  });
-
-  it('throws on invalid key name', () => {
-    expect(() => mergePhrases([target], { 'invalid$': '' })).to.throw();
   });
 
   it('overwrites objects with strings', () => {
@@ -169,7 +170,7 @@ describe('mergePhrases', () => {
       },
       other: 'a',
     };
-    mergePhrases([target], {
+    mergePhrases(target, {
       foo: 'bar',
     });
     expect(target).to.deep.equal({
@@ -183,7 +184,7 @@ describe('mergePhrases', () => {
       foo: 'bar',
       other: 'a',
     };
-    mergePhrases([target], {
+    mergePhrases(target, {
       foo: {
         bar: 'baz',
       },
@@ -193,32 +194,6 @@ describe('mergePhrases', () => {
         bar: 'baz',
       },
       other: 'a',
-    });
-  });
-
-  it('creates missing keys in multiple targets', () => {
-    target = {
-      foo: {
-        bar: 'bar',
-      },
-    };
-    mergePhrases([target, target2], {
-      foo: {
-        baz: 'baz',
-      },
-    });
-
-    // ensure it does not clear the key if it already exists
-    expect(target).to.deep.equal({
-      foo: {
-        bar: 'bar',
-        baz: 'baz',
-      }
-    });
-    expect(target2).to.deep.equal({
-      foo: {
-        baz: 'baz',
-      }
     });
   });
 });

@@ -336,37 +336,41 @@ export function lookupPhrase(options: LookupOptions): string {
 }
 
 /**
- * Merges a phrase object into zero or more phrase objects.
- *
- * The context names of keys will also be validated.
+ * Validates that the phrase object contains valid key contexts.
  */
-export function mergePhrases(targets: Phrases[], phrases: Phrases): void {
+export function validatePhrases(phrases: Phrases): void {
   for (const context in phrases) {
     if (!context.match(VALID_KEY_CONTEXT)) {
       throw new Error(
         `${context} is not a valid key context. ` +
         `Valid keys should be of the format ${VALID_KEY_CONTEXT.toString()}.`);
     }
+    const value = phrases[context];
+    if (isPhrases(value)) {
+      validatePhrases(value);
+    }
+  }
+}
 
+/**
+ * Recursively merges a phrase object into another phrase object.
+ */
+export function mergePhrases(target: Phrases, phrases: Phrases): void {
+  for (const context in phrases) {
     const value = phrases[context];
 
     if (isPhrases(value)) {
-      let newTargets: Phrases[] = [];
-      for (const target of targets) {
-        const contextedTarget = target[context];
-        if (!isPhrases(contextedTarget)) {
-          const newTarget: Phrases = {};
-          target[context] = newTarget;
-          newTargets.push(newTarget);
-        } else {
-          newTargets.push(contextedTarget);
-        }
+      let contextedTarget = target[context];
+      let newTarget: Phrases;
+      if (!isPhrases(contextedTarget)) {
+        newTarget = {};
+        target[context] = newTarget;
+      } else {
+        newTarget = contextedTarget;
       }
-      mergePhrases(newTargets, value);
+      mergePhrases(newTarget, value);
     } else {
-      for (const target of targets) {
-        target[context] = value;
-      }
+      target[context] = value;
     }
   }
 }
