@@ -319,6 +319,16 @@ describe('Mnoga', () => {
       expect(mnoga.t('app.pluralize', { count: 1 })).to.equal('app.pluralize');
       expect(mnoga.t('app.pluralize', { count: 1 }, { locale: 'ja' })).to.equal('app.pluralize');
     });
+
+    it('mutating phrases input does not affect the store', () => {
+      const input = { foo: { bar: 'baz' } };
+      const mnoga = new Mnoga();
+      mnoga.setPhrases('en', input);
+
+      // Mutate foo.bar key after calling setPhrases
+      input.foo.bar = 'Overwritten';
+      expect(mnoga.t('foo.bar')).to.equal('baz');
+    });
   });
 
   describe('addPhrases', () => {
@@ -350,6 +360,16 @@ describe('Mnoga', () => {
       expect(mnoga.t('app.label', {}, { locale: 'ja' })).to.equal('Overwritten');
       expect(mnoga.t('app.pluralize', { count: 1 })).to.equal('1 cat');
       expect(mnoga.t('app.pluralize', { count: 1 }, { locale: 'ja' })).to.equal('1匹');
+    });
+
+    it('mutating phrases input does not affect the store', () => {
+      const input = { foo: { bar: 'baz' } };
+      const mnoga = new Mnoga();
+      mnoga.addPhrases('en', input);
+
+      // Mutate foo.bar key after calling setPhrases
+      input.foo.bar = 'Overwritten';
+      expect(mnoga.t('foo.bar')).to.equal('baz');
     });
   });
 
